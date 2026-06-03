@@ -44,6 +44,9 @@
             opacity: 0;
             transition: opacity 0.6s ease-in-out;
             will-change: opacity;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: none;
+            scroll-behavior: smooth;
         }
 
         .tab-content {
@@ -197,7 +200,7 @@
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; top:0; left:0; right:0; bottom:0; background: #2A3B50; border-radius: 18px; transition: .2s; }
         .slider:before { position: absolute; content:""; height:12px; width:12px; left:3px; bottom:3px; background: white; border-radius: 50%; transition: .2s; }
-        input:checked + .slider { background: #3B82F6; }
+        input:checked + .slider { background: var(--accent-blue); }
         input:checked + .slider:before { transform: translateX(16px); }
 
         .nav-bar-container { position: fixed; bottom: 10px; left: 10px; right: 10px; z-index: 999; }
@@ -205,50 +208,9 @@
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 8px; font-weight: 700; cursor: pointer; flex: 1; }
         .nav-item span { margin-bottom: 2px; font-size: 16px; }
         .nav-item.active { color: #0088FF; }
-
-        /* Header MODPACK di paling atas */
-        .app-header {
-            background: #0F141C;
-            padding: 16px 16px 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 8px;
-        }
-        .header-left h1 {
-            margin: 0;
-            font-size: 26px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-        }
-        .header-left .version {
-            margin: 2px 0 0 0;
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-        .header-right {
-            display: flex;
-            align-items: center;
-            color: #EF4444;
-        }
-        .header-right .material-icons-round {
-            font-size: 26px;
-        }
     </style>
 </head>
 <body>
-
-    <!-- Header MODPACK seperti di gambar -->
-    <div class="app-header">
-        <div class="header-left">
-            <h1>MODPACK</h1>
-            <p class="version">Version 3.1.0 (Beta)</p>
-        </div>
-        <div class="header-right">
-            <span class="material-icons-round">power_settings_new</span>
-        </div>
-    </div>
 
     <div id="home" class="tab-content active">
         <div class="status-container">
@@ -377,16 +339,18 @@
             <div class="config-label">Resolution</div>
             <div class="resolution-input-row">
                 <div class="input-box-wrapper">
-                    <input type="number" class="style-input" id="input-width" placeholder="Width" maxlength="4" max="9999" oninput="calculateHeight(this.value)">
+                    <input type="number" class="style-input" id="input-width" placeholder="Width" 
+                           oninput="this.value = this.value.slice(0,4); calculateHeight(this.value)">
                 </div>
                 <div class="input-box-wrapper">
-                    <input type="number" class="style-input" id="input-height" placeholder="Height" readonly maxlength="4">
+                    <input type="number" class="style-input" id="input-height" placeholder="Height" readonly>
                 </div>
             </div>
 
             <div class="config-label">Density (DPI)</div>
             <div class="dropdown-container" style="margin-bottom: 16px;">
-                <input type="number" class="style-input" id="input-dpi" placeholder="DPI" min="388" max="580">
+                <input type="number" class="style-input" id="input-dpi" placeholder="DPI" 
+                       oninput="this.value = this.value.slice(0,3)">
                 <small style="color: #6B7A8F; font-size: 9.5px; margin-top: 4px; display: block;">Min: 388 &nbsp;&nbsp; Max: 580</small>
             </div>
 

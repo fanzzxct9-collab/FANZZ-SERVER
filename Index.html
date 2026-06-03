@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensix AI Changer</title>
+    <style>
+        body {
+            background-color: #0B0E14;
+            color: #FFFFFF;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 20px;
+            margin: 0;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .title { color: #00FFCC; font-size: 22px; font-weight: bold; }
+        .card {
+            background: #141A24;
+            border: 1px solid #1E293B;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; color: #64748B; font-size: 12px; margin-bottom: 5px; }
+        input {
+            width: 90%; background: #161B22; border: 1px solid #21262D;
+            color: white; padding: 12px; border-radius: 8px; text-align: center;
+        }
+        .btn-apply {
+            background: #00FFCC; color: #0B0E14; border: none;
+            padding: 12px 20px; border-radius: 8px; font-weight: bold; width: 100%;
+        }
+        .btn-reset {
+            background: #FF3B30; color: white; border: none;
+            padding: 12px 20px; border-radius: 8px; font-weight: bold; width: 100%; margin-top: 10px;
+        }
+        .switch-container {
+            display: flex; justify-content: space-between; align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="title">AI RESOLUSI HTML</div>
+    </div>
+
+    <div class="card">
+        <div class="input-group">
+            <label>WIDTH</label>
+            <input type="number" id="width" placeholder="1080">
+        </div>
+        <div class="input-group">
+            <label>HEIGHT</label>
+            <input type="number" id="height" placeholder="2400">
+        </div>
+        <div class="input-group">
+            <label>SENSX (DPI)</label>
+            <input type="number" id="dpi" placeholder="440">
+        </div>
+        <button class="btn-apply" onclick="applyRes()">APPLY CONFIG</button>
+        <button class="btn-reset" onclick="resetRes()">RESET DEFAULT</button>
+    </div>
+
+    <div class="card switch-container">
+        <div>
+            <div style="font-weight:bold;">Sensitivity Tuning</div>
+            <div style="font-size:12px; color:#475569">Pergerakan aim lebih licin</div>
+        </div>
+        <input type="checkbox" id="sens" style="width:auto;" onclick="toggleFeature('sensitivity', this.checked)">
+    </div>
+
+    <div class="card switch-container">
+        <div>
+            <div style="font-weight:bold;">Max Performance</div>
+            <div style="font-size:12px; color:#475569">Memaksa GPU bekerja maksimal</div>
+        </div>
+        <input type="checkbox" id="perf" style="width:auto;" onclick="toggleFeature('performance', this.checked)">
+    </div>
+
+    <script>
+        // Memanggil fungsi Java melalui Jembatan 'Android.'
+        function applyRes() {
+            var w = document.getElementById('width').value;
+            var h = document.getElementById('height').value;
+            var d = document.getElementById('dpi').value;
+            Android.applyResolution(w, h, d);
+        }
+
+        function resetRes() {
+            Android.resetResolution();
+        }
+
+        function toggleFeature(feature, isChecked) {
+            Android.setFeature(feature, isChecked);
+        }
+    </script>
+</body>
+</html>

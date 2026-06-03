@@ -90,14 +90,56 @@
         .support-left p { margin: 1px 0 0 0; font-size: 9.5px; color: var(--text-muted); }
         .support-socials { display: flex; gap: 10px; align-items: center; }
 
-        .game-launcher-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .game-launcher-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
         .game-card-btn {
             background: var(--bg-card); border-radius: 12px; padding: 8px;
             display: flex; align-items: center; gap: 8px; cursor: pointer;
+            border: 1px solid transparent; transition: all 0.3s ease;
+        }
+        .game-card-btn.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .game-card-btn.ready {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
         }
         .game-icon-img { width: 30px; height: 30px; border-radius: 8px; object-fit: cover; }
         .game-meta h3 { margin: 0; font-size: 11px; font-weight: 700; }
         .game-meta p { margin: 0; font-size: 8.5px; color: var(--text-muted); }
+
+        /* MODIFIKASI TERBARU: GAME OPTIMIZER STYLING */
+        .optimizer-container {
+            background: var(--bg-card); border-radius: 14px; padding: 12px; margin-bottom: 10px;
+        }
+        .opt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .opt-title { font-size: 11.5px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
+        .opt-title span { font-size: 16px; color: var(--accent-blue); }
+        
+        .opt-selector {
+            background: var(--bg-subcard); color: white; border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 6px; padding: 3px 6px; font-size: 10px; font-weight: 600; outline: none;
+        }
+
+        /* Slide to Unlock / Login Style */
+        .slide-lock-wrapper {
+            position: relative; background: var(--input-bg); height: 38px; 
+            border-radius: 20px; display: flex; align-items: center; 
+            justify-content: center; overflow: hidden; border: 1px solid rgba(255,255,255,0.03);
+        }
+        .slide-text { font-size: 11px; font-weight: 700; color: var(--text-muted); pointer-events: none; z-index: 2; }
+        .slide-handle {
+            position: absolute; left: 2px; top: 2px; width: 34px; height: 32px;
+            background: var(--accent-blue); border-radius: 18px; display: flex;
+            align-items: center; justify-content: center; cursor: grab; z-index: 3;
+            box-shadow: 0 2px 6px rgba(0,136,255,0.4); transition: transform 0.1s ease;
+        }
+        .slide-handle span { color: white; font-size: 18px; }
+        .slide-progress {
+            position: absolute; left: 0; top: 0; height: 100%; width: 0;
+            background: rgba(0, 136, 255, 0.15); z-index: 1; border-radius: 20px 0 0 20px;
+        }
 
         .social-icon-img { width: 22px; height: 22px; object-fit: contain; }
 
@@ -242,13 +284,33 @@
 
     <div id="tools" class="tab-content">
         <div class="game-launcher-grid">
-            <div class="game-card-btn" onclick="Android.runGame('com.dts.freefireth')">
+            <div class="game-card-btn disabled" id="btn-ff-normal" onclick="Android.runGame('com.dts.freefireth')">
                 <img class="game-icon-img" src="https://fanzzxct9-collab.github.io/FANZZ-SERVER/ff_icon.png" onerror="this.src='https://img.icons8.com/color/96/free-fire.png'" alt="FF">
                 <div class="game-meta"><h3>Free Fire</h3><p>com.dts.freefireth</p></div>
             </div>
-            <div class="game-card-btn" onclick="Android.runGame('com.dts.freefiremax')">
+            <div class="game-card-btn disabled" id="btn-ff-max" onclick="Android.runGame('com.dts.freefiremax')">
                 <img class="game-icon-img" src="https://fanzzxct9-collab.github.io/FANZZ-SERVER/ffmax_icon.png" onerror="this.src='https://img.icons8.com/color/96/free-fire.png'" alt="FF MAX">
                 <div class="game-meta"><h3>Free Fire MAX</h3><p>com.dts.freefiremax</p></div>
+            </div>
+        </div>
+
+        <div class="optimizer-container">
+            <div class="opt-header">
+                <div class="opt-title">
+                    <span class="material-icons-round">bolt</span> Launcher Optimizer
+                </div>
+                <select class="opt-selector" id="perf-mode-select">
+                    <option value="biasa">Biasa (Normal)</option>
+                    <option value="gempal">Gempal (RAM 2GB Max)</option>
+                </select>
+            </div>
+            
+            <div class="slide-lock-wrapper" id="slide-lock-container">
+                <div class="slide-progress" id="slide-bg-progress"></div>
+                <div class="slide-text" id="slide-label-text">GESER UNTUK OPTIMASI & LOGIN</div>
+                <div class="slide-handle" id="slider-trigger">
+                    <span class="material-icons-round">keyboard_double_arrow_right</span>
+                </div>
             </div>
         </div>
 
@@ -400,12 +462,12 @@
     </div>
 
     <script>
-        // Efek smooth fade diaktifkan sesaat setelah halaman dimuat
+        // Anti White-Flash WebView Engine
         window.addEventListener('DOMContentLoaded', () => {
             document.body.style.opacity = '1';
         });
 
-        // Hitung Otomatis Height Ultrawide (1120 -> 3111 persis seperti di video)
+        // Hitung Otomatis Resolusi Ultrawide (1120 X 3111)
         function calculateHeight(widthValue) {
             var heightInput = document.getElementById('input-height');
             if (!widthValue || widthValue === "") {
@@ -418,7 +480,6 @@
             let calculatedHeight;
 
             if (mode === "ultrawide") {
-                // Skala pengali disesuaikan persis untuk menghasilkan nilai 3111 dari input 1120
                 calculatedHeight = Math.round(width * 2.77767857);
             } else {
                 calculatedHeight = Math.round(width * (16 / 9));
@@ -442,7 +503,7 @@
             }
         }
 
-        document.addEventListener("DOMContentLoaded", function() { loadRealtimeData(); });
+        document.addEventListener("DOMContentLoaded", function() { loadRealtimeData(); initSliderLogic(); });
 
         function switchTab(tabId, element) {
             var contents = document.querySelectorAll('.tab-content');
@@ -519,7 +580,6 @@
             var h = document.getElementById('input-height').value;
             var dpi = document.getElementById('input-dpi').value;
 
-            // Validasi DPI (388 - 580)
             if (dpi && (parseInt(dpi) < 388 || parseInt(dpi) > 580)) {
                 alert("DPI harus antara 388 sampai 580!");
                 return;
@@ -535,6 +595,80 @@
             document.getElementById('input-height').value = "";
             document.getElementById('input-dpi').value = "";
             if (typeof Android !== "undefined") { Android.resetResolution(); }
+        }
+
+        /* LOGIK GERAK SLIDER OPTIMIZER RAM 2GB (REAL TIME ACTION) */
+        function initSliderLogic() {
+            const handle = document.getElementById('slider-trigger');
+            const container = document.getElementById('slide-lock-container');
+            const progress = document.getElementById('slide-bg-progress');
+            const labelText = document.getElementById('slide-label-text');
+            
+            let isDragging = false;
+            let startX = 0;
+            let maxSlide = container.clientWidth - handle.clientWidth - 4;
+
+            function onStart(e) {
+                isDragging = true;
+                startX = (e.touches ? e.touches[0].clientX : e.clientX) - handle.offsetLeft;
+                maxSlide = container.clientWidth - handle.clientWidth - 4;
+            }
+
+            function onMove(e) {
+                if (!isDragging) return;
+                let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                let left = clientX - startX;
+
+                if (left < 2) left = 2;
+                if (left > maxSlide) left = maxSlide;
+
+                handle.style.transform = `translateX(${left - 2}px)`;
+                progress.style.width = `${left + (handle.clientWidth / 2)}px`;
+
+                // Jika digeser penuh ke kanan
+                if (left >= maxSlide - 5) {
+                    isDragging = false;
+                    handle.style.transform = `translateX(${maxSlide - 2}px)`;
+                    handle.style.background = '#10B981'; // Berubah hijau sukses
+                    handle.innerHTML = '<span class="material-icons-round">done</span>';
+                    labelText.innerText = "OPTIMASI SELESAI! SILAKAN LOGIN";
+                    labelText.style.color = "#10B981";
+                    
+                    // Eksekusi fungsi pengoptimal riil di background Android Sketchware Anda
+                    var selectedMode = document.getElementById('perf-mode-select').value;
+                    if (typeof Android !== "undefined") {
+                        // Memanggil perintah tweak performa sistem Android Anda
+                        Android.setGameTweak('ram_boost_2gb', true);
+                        Android.setGameTweak('max_performance', true);
+                        Android.setGameTweak('fps_boost', (selectedMode === 'gempal'));
+                    }
+
+                    // Aktifkan tombol peluncur Free Fire (Buka Kunci)
+                    document.getElementById('btn-ff-normal').classList.remove('disabled');
+                    document.getElementById('btn-ff-normal').classList.add('ready');
+                    document.getElementById('btn-ff-max').classList.remove('disabled');
+                    document.getElementById('btn-ff-max').classList.add('ready');
+                    
+                    // Matikan fungsi geser agar tidak bisa digeser-geser lagi setelah sukses
+                    handle.removeEventListener('mousedown', onStart);
+                    handle.removeEventListener('touchstart', onStart);
+                }
+            }
+
+            function onEnd() {
+                if (!isDragging) return;
+                isDragging = false;
+                // Kembali ke posisi awal jika tidak digeser sampai penuh
+                handle.style.transform = 'translateX(0px)';
+                progress.style.width = '0px';
+            }
+
+            handle.addEventListener('mousedown', onStart);
+            handle.addEventListener('touchstart', onStart);
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('touchmove', onMove, { passive: false });
+            window.addEventListener('mouseup', onEnd);
+            window.addEventListener('touchend', onEnd);
         }
     </script>
 </body>

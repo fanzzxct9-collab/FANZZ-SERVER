@@ -32,14 +32,18 @@
             background-color: var(--bg-primary);
         }
 
-        /* Efek Smooth transisi saat pertama kali masuk halaman (fade lebih halus & aman) */
+        /* Anti white flash + smooth fade (khusus untuk WebView / Sketchware) */
+        html, body {
+            background-color: var(--bg-primary) !important;
+        }
+
         body {
-            background-color: var(--bg-primary);
             color: var(--text-main);
             margin: 0;
             padding: 10px 10px 85px 10px;
             opacity: 0;
             transition: opacity 0.6s ease-in-out;
+            will-change: opacity;
         }
 
         .tab-content {
@@ -201,9 +205,50 @@
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 8px; font-weight: 700; cursor: pointer; flex: 1; }
         .nav-item span { margin-bottom: 2px; font-size: 16px; }
         .nav-item.active { color: #0088FF; }
+
+        /* Header MODPACK di paling atas */
+        .app-header {
+            background: #0F141C;
+            padding: 16px 16px 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        .header-left h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+        .header-left .version {
+            margin: 2px 0 0 0;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            color: #EF4444;
+        }
+        .header-right .material-icons-round {
+            font-size: 26px;
+        }
     </style>
 </head>
 <body>
+
+    <!-- Header MODPACK seperti di gambar -->
+    <div class="app-header">
+        <div class="header-left">
+            <h1>MODPACK</h1>
+            <p class="version">Version 3.1.0 (Beta)</p>
+        </div>
+        <div class="header-right">
+            <span class="material-icons-round">power_settings_new</span>
+        </div>
+    </div>
 
     <div id="home" class="tab-content active">
         <div class="status-container">
@@ -332,16 +377,17 @@
             <div class="config-label">Resolution</div>
             <div class="resolution-input-row">
                 <div class="input-box-wrapper">
-                    <input type="number" class="style-input" id="input-width" placeholder="Width" oninput="calculateHeight(this.value)">
+                    <input type="number" class="style-input" id="input-width" placeholder="Width" maxlength="4" max="9999" oninput="calculateHeight(this.value)">
                 </div>
                 <div class="input-box-wrapper">
-                    <input type="number" class="style-input" id="input-height" placeholder="Height" readonly>
+                    <input type="number" class="style-input" id="input-height" placeholder="Height" readonly maxlength="4">
                 </div>
             </div>
 
-            <div class="config-label">Density</div>
+            <div class="config-label">Density (DPI)</div>
             <div class="dropdown-container" style="margin-bottom: 16px;">
-                <input type="number" class="style-input" id="input-dpi" placeholder="DPI">
+                <input type="number" class="style-input" id="input-dpi" placeholder="DPI" min="388" max="580">
+                <small style="color: #6B7A8F; font-size: 9.5px; margin-top: 4px; display: block;">Min: 388 &nbsp;&nbsp; Max: 580</small>
             </div>
 
             <div class="action-button-row">
@@ -508,7 +554,16 @@
             var w = document.getElementById('input-width').value;
             var h = document.getElementById('input-height').value;
             var dpi = document.getElementById('input-dpi').value;
-            if (typeof Android !== "undefined") { Android.applyResolution(w, h, dpi); }
+
+            // Validasi DPI (388 - 580)
+            if (dpi && (parseInt(dpi) < 388 || parseInt(dpi) > 580)) {
+                alert("DPI harus antara 388 sampai 580!");
+                return;
+            }
+
+            if (typeof Android !== "undefined") { 
+                Android.applyResolution(w, h, dpi); 
+            }
         }
 
         function triggerResetResolution() {

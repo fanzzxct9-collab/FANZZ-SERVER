@@ -27,106 +27,21 @@
             user-select: none;
         }
 
+        /* Menghilangkan jeda putih dengan menyamakan warna background dasar sejak awal */
         html {
             background-color: var(--bg-primary);
         }
 
+        /* Efek Smooth transisi saat pertama kali masuk halaman (fade lebih halus & aman) */
         body {
             background-color: var(--bg-primary);
             color: var(--text-main);
             margin: 0;
             padding: 10px 10px 85px 10px;
-        }
-
-        #main-content {
             opacity: 0;
-            transition: opacity 0.5s ease-in-out;
+            transition: opacity 0.6s ease-in-out;
         }
 
-        /* ==================== LOADING PREMIUM ==================== */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-primary);
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            transition: opacity 0.6s ease;
-        }
-
-        .loading-logo {
-            width: 92px;
-            height: 92px;
-            margin-bottom: 18px;
-        }
-
-        .loading-title {
-            font-size: 34px;
-            font-weight: 800;
-            margin: 0 0 6px 0;
-            letter-spacing: 1.5px;
-        }
-
-        .loading-title span {
-            color: var(--accent-blue);
-        }
-
-        .premium-badge {
-            background: linear-gradient(90deg, #0088FF, #3B82F6);
-            color: white;
-            font-size: 11px;
-            font-weight: 800;
-            padding: 5px 16px;
-            border-radius: 20px;
-            letter-spacing: 1.2px;
-            margin-bottom: 32px;
-            box-shadow: 0 4px 20px rgba(0, 136, 255, 0.35);
-        }
-
-        .progress-container {
-            width: 100%;
-            max-width: 280px;
-            height: 5px;
-            background: #1F2C3F;
-            border-radius: 999px;
-            overflow: hidden;
-            margin-bottom: 18px;
-            box-shadow: inset 0 1px 4px rgba(0,0,0,0.4);
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(to right, #0088FF, #60A5FA);
-            border-radius: 999px;
-            transition: width 20s linear;
-            box-shadow: 0 0 12px rgba(0, 136, 255, 0.7);
-        }
-
-        .loading-text {
-            font-size: 13.5px;
-            color: var(--text-muted);
-            font-weight: 600;
-            text-align: center;
-            min-height: 22px;
-            transition: opacity 0.25s ease;
-        }
-
-        .loading-version {
-            position: absolute;
-            bottom: 35px;
-            font-size: 11px;
-            color: #4B5E78;
-            font-weight: 600;
-        }
-
-        /* ==================== STYLE ASLI ==================== */
         .tab-content {
             display: none;
             padding: 14px 8px;
@@ -177,7 +92,7 @@
         .game-meta h3 { margin: 0; font-size: 11px; font-weight: 700; }
         .game-meta p { margin: 0; font-size: 8.5px; color: var(--text-muted); }
 
-        .social-icon-img { width: 18px; height: 18px; object-fit: contain; }
+        .social-icon-img { width: 22px; height: 22px; object-fit: contain; }
 
         .tweak-card {
             background: var(--bg-card); border-radius: 14px; padding: 10px 12px;
@@ -290,269 +205,197 @@
 </head>
 <body>
 
-    <!-- ==================== LOADING SCREEN PREMIUM 20 DETIK ==================== -->
-    <div id="loading-screen" class="loading-screen">
-        <svg class="loading-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 20L50 55L90 20L75 85L50 65L25 85L10 20Z" fill="#0088FF"/>
-            <circle cx="50" cy="50" r="9" fill="white"/>
-        </svg>
-        
-        <h1 class="loading-title">SENSI<span>X</span></h1>
-        <div class="premium-badge">PREMIUM</div>
-        
-        <div class="progress-container">
-            <div id="progress-bar" class="progress-bar"></div>
+    <div id="home" class="tab-content active">
+        <div class="status-container">
+            <h2 class="status-title">Berjalan <span class="badge-tools">Tools</span></h2>
+            <p class="status-version">Versi: 3.1.0 | Beta</p>
+            <div class="status-timer">T+167 : 34 : 05</div>
+            <svg class="logo-hacker" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 20L50 55L90 20L75 85L50 65L25 85L10 20Z" fill="white"/></svg>
         </div>
-        
-        <p id="loading-text" class="loading-text">Initializing Premium Core...</p>
-        
-        <div class="loading-version">v3.1.0 • Beta</div>
+
+        <div class="spec-box">
+            <div class="spec-item"><div class="spec-icon"><span class="material-icons-round">smartphone</span></div><div class="spec-info"><h4>Nama Perangkat</h4><p id="txt-device">Memuat...</p></div></div>
+            <div class="spec-item"><div class="spec-icon"><span class="material-icons-round">android</span></div><div class="spec-info"><h4>Versi Android</h4><p id="txt-android">Memuat...</p></div></div>
+            <div class="spec-item"><div class="spec-icon"><span class="material-icons-round">code</span></div><div class="spec-info"><h4>Akses Mode</h4><p id="txt-shizuku">Memuat...</p></div></div>
+            <div class="spec-item"><div class="spec-icon"><span class="material-icons-round">memory</span></div><div class="spec-info"><h4>ABI Support</h4><p id="txt-abi">Memuat...</p></div></div>
+            <div class="spec-item"><div class="spec-icon"><span class="material-icons-round">vpn_key</span></div><div class="spec-info"><h4>Build ID</h4><p id="txt-build">Memuat...</p></div></div>
+        </div>
+
+        <a href="https://whatsapp.com/channel/0029VajWnZ6E50UfByAasT3G" target="_blank" class="support-box">
+            <div class="support-left">
+                <h3>Support Team</h3>
+                <p>support us by following our social media, to get more information</p>
+            </div>
+            <div class="support-socials">
+                <img class="social-icon-img" src="https://img.icons8.com/color/48/whatsapp--v1.png" alt="WA">
+                <img class="social-icon-img" src="https://img.icons8.com/color/48/tiktok.png" alt="TT">
+            </div>
+        </a>
     </div>
 
-    <!-- ==================== MAIN CONTENT ==================== -->
-    <div id="main-content">
-
-        <div id="home" class="tab-content active">
-            <div class="status-container">
-                <h2 class="status-title">Berjalan <span class="badge-tools">Tools</span></h2>
-                <p class="status-version">Versi: 3.1.0 | Beta</p>
-                <div class="status-timer">T+167 : 34 : 05</div>
-                <svg class="logo-hacker" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 20L50 55L90 20L75 85L50 65L25 85L10 20Z" fill="white"/></svg>
+    <div id="tools" class="tab-content">
+        <div class="game-launcher-grid">
+            <div class="game-card-btn" onclick="Android.runGame('com.dts.freefireth')">
+                <img class="game-icon-img" src="https://fanzzxct9-collab.github.io/FANZZ-SERVER/ff_icon.png" onerror="this.src='https://img.icons8.com/color/96/free-fire.png'" alt="FF">
+                <div class="game-meta"><h3>Free Fire</h3><p>com.dts.freefireth</p></div>
             </div>
-
-            <div class="spec-box">
-                <div class="spec-item"><div class="spec-icon"><span class="material-icons-round">smartphone</span></div><div class="spec-info"><h4>Nama Perangkat</h4><p id="txt-device">Memuat...</p></div></div>
-                <div class="spec-item"><div class="spec-icon"><span class="material-icons-round">android</span></div><div class="spec-info"><h4>Versi Android</h4><p id="txt-android">Memuat...</p></div></div>
-                <div class="spec-item"><div class="spec-icon"><span class="material-icons-round">code</span></div><div class="spec-info"><h4>Akses Mode</h4><p id="txt-shizuku">Memuat...</p></div></div>
-                <div class="spec-item"><div class="spec-icon"><span class="material-icons-round">memory</span></div><div class="spec-info"><h4>ABI Support</h4><p id="txt-abi">Memuat...</p></div></div>
-                <div class="spec-item"><div class="spec-icon"><span class="material-icons-round">vpn_key</span></div><div class="spec-info"><h4>Build ID</h4><p id="txt-build">Memuat...</p></div></div>
-            </div>
-
-            <a href="https://whatsapp.com/channel/0029VajWnZ6E50UfByAasT3G" target="_blank" class="support-box">
-                <div class="support-left">
-                    <h3>Support Team</h3>
-                    <p>support us by following our social media, to get more information</p>
-                </div>
-                <div class="support-socials">
-                    <img class="social-icon-img" src="https://img.icons8.com/color/48/whatsapp--v1.png" alt="WA">
-                    <img class="social-icon-img" src="https://img.icons8.com/color/48/tiktok.png" alt="TT">
-                </div>
-            </a>
-        </div>
-
-        <div id="tools" class="tab-content">
-            <div class="game-launcher-grid">
-                <div class="game-card-btn" onclick="Android.runGame('com.dts.freefireth')">
-                    <img class="game-icon-img" src="https://fanzzxct9-collab.github.io/FANZZ-SERVER/ff_icon.png" onerror="this.src='https://img.icons8.com/color/96/free-fire.png'" alt="FF">
-                    <div class="game-meta"><h3>Free Fire</h3><p>com.dts.freefireth</p></div>
-                </div>
-                <div class="game-card-btn" onclick="Android.runGame('com.dts.freefiremax')">
-                    <img class="game-icon-img" src="https://fanzzxct9-collab.github.io/FANZZ-SERVER/ffmax_icon.png" onerror="this.src='https://img.icons8.com/color/96/free-fire.png'" alt="FF MAX">
-                    <div class="game-meta"><h3>Free Fire MAX</h3><p>com.dts.freefiremax</p></div>
-                </div>
-            </div>
-
-            <div class="tweak-card" style="margin-bottom: 8px;">
-                <div class="tweak-left">
-                    <div class="tweak-icon-box"><span class="material-icons-round">star_outline</span></div>
-                    <div class="tweak-text">
-                        <h3>Sensi Recommendation</h3>
-                        <p>Memberikan rekomendasi pengaturan sensitivitas berdasarkan perangkat dan penggunaan agar kontrol lebih stabil dan nyaman</p>
-                    </div>
-                </div>
-                <div class="tweak-right-action">
-                    <label class="switch">
-                        <input type="checkbox" id="switch-sensi" onchange="toggleSensiPanel(this.checked)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="recommendation-panel" id="panel-sensi">
-                <div class="panel-header">
-                    <select class="select-sensi-mode" id="sensi-preset-mode">
-                        <option value="all">All Device</option>
-                        <option value="low">Sensi Rendah</option>
-                        <option value="med">Sensi Sedang</option>
-                        <option value="high">Sensi Tinggi</option>
-                    </select>
-                    <button class="btn-generate" onclick="generateSensiData()">GENERATE</button>
-                </div>
-                
-                <div class="sensi-row-item"><span class="sensi-name">Lihat Sekeliling</span><span class="sensi-value" id="val-sekeliling">0</span></div>
-                <div class="sensi-row-item"><span class="sensi-name">Red Dot Sight</span><span class="sensi-value" id="val-reddot">0</span></div>
-                <div class="sensi-row-item"><span class="sensi-name">2x Scope</span><span class="sensi-value" id="val-2x">0</span></div>
-                <div class="sensi-row-item"><span class="sensi-name">4x Scope</span><span class="sensi-value" id="val-4x">0</span></div>
-                <div class="sensi-row-item"><span class="sensi-name">Sniper Scope</span><span class="sensi-value" id="val-sniper">0</span></div>
-                <div class="sensi-row-item"><span class="sensi-name">Tombol Kamera Bebas</span><span class="sensi-value" id="val-kamera">0</span></div>
-            </div>
-
-            <div class="tweak-card">
-                <div class="tweak-left">
-                    <div class="tweak-icon-box"><span class="material-icons-round">ads_click</span></div>
-                    <div class="tweak-text"><h3>Easy Drag</h3><p>Mempermudah pergerakan drag agar lebih ringan dan mudah dikontrol sehingga transisi aim terasa lebih halus</p></div>
-                </div>
-                <div class="tweak-right-action"><label class="switch"><input type="checkbox" onchange="Android.setGameTweak('easy_drag', this.checked)"><span class="slider"></span></label></div>
-            </div>
-            <div class="tweak-card">
-                <div class="tweak-left">
-                    <div class="tweak-icon-box"><span class="material-icons-round">track_changes</span></div>
-                    <div class="tweak-text"><h3>Drag hs</h3><p>Membantu arah pergerakan drag lebih terarah ke area target untuk mempermudah mendapatkan headshot secara konsisten</p></div>
-                </div>
-                <div class="tweak-right-action"><label class="switch"><input type="checkbox" onchange="Android.setGameTweak('drag_hs', this.checked)"><span class="slider"></span></label></div>
-            </div>
-            <div class="tweak-card">
-                <div class="tweak-left">
-                    <div class="tweak-icon-box"><span class="material-icons-round">bolt</span></div>
-                    <div class="tweak-text"><h3>Fps Boost</h3><p>Meningkatkan kestabilan frame rate agar tampilan lebih lancar dan responsif saat digunakan (tidak semua divice support)</p></div>
-                </div>
-                <div class="tweak-right-action"><label class="switch"><input type="checkbox" onchange="Android.setGameTweak('fps_boost', this.checked)"><span class="slider"></span></label></div>
-            </div>
-            <div class="tweak-card">
-                <div class="tweak-left">
-                    <div class="tweak-icon-box"><span class="material-icons-round">tune</span></div>
-                    <div class="tweak-text"><h3>Sensitivity tuning</h3><p>Menyesuaikan tingkat sensitivitas agar pergerakan aim lebih stabil halus dan sesuai dengan karakter penggunaan (tidak semua divice support)</p></div>
-                </div>
-                <div class="tweak-right-action"><label class="switch"><input type="checkbox" onchange="Android.setGameTweak('sensitivity_tuning', this.checked)"><span class="slider"></span></label></div>
-            </div>
-            <div class="tweak-card">
-                <div class="tweak-left">
-                    <div class="tweak-icon-box"><span class="material-icons-round">speed</span></div>
-                    <div class="tweak-text"><h3>Max performance</h3><p>Mengoptimalkan performa perangkat agar berjalan lebih stabil dan responsif saat digunakan (tidak semua divice support)</p></div>
-                </div>
-                <div class="tweak-right-action"><label class="switch"><input type="checkbox" onchange="Android.setGameTweak('max_performance', this.checked)"><span class="slider"></span></label></div>
+            <div class="game-card-btn" onclick="Android.runGame('com.dts.freefiremax')">
+                <img class="game-icon-img" src="https://fanzzxct9-collab.github.io/FANZZ-SERVER/ffmax_icon.png" onerror="this.src='https://img.icons8.com/color/96/free-fire.png'" alt="FF MAX">
+                <div class="game-meta"><h3>Free Fire MAX</h3><p>com.dts.freefiremax</p></div>
             </div>
         </div>
 
-        <div id="setting" class="tab-content">
-            <div class="setting-section-title">Display Configuration</div>
-            
-            <div class="config-group">
-                <div class="config-label">Display Mode</div>
-                <div class="dropdown-container">
-                    <select class="dropdown-select" id="display-mode-select">
-                        <option value="biasa">Biasa</option>
-                        <option value="ultrawide" selected>Ultrawide</option>
-                    </select>
+        <div class="tweak-card" style="margin-bottom: 8px;">
+            <div class="tweak-left">
+                <div class="tweak-icon-box"><span class="material-icons-round">star_outline</span></div>
+                <div class="tweak-text">
+                    <h3>Sensi Recommendation</h3>
+                    <p>Memberikan rekomendasi pengaturan sensitivitas berdasarkan perangkat dan penggunaan agar kontrol lebih stabil dan nyaman</p>
                 </div>
-
-                <div class="config-label">Resolution</div>
-                <div class="resolution-input-row">
-                    <div class="input-box-wrapper">
-                        <input type="number" class="style-input" id="input-width" placeholder="Width" oninput="calculateHeight(this.value)">
-                    </div>
-                    <div class="input-box-wrapper">
-                        <input type="number" class="style-input" id="input-height" placeholder="Height" readonly>
-                    </div>
-                </div>
-
-                <div class="config-label">Density</div>
-                <div class="dropdown-container" style="margin-bottom: 16px;">
-                    <input type="number" class="style-input" id="input-dpi" placeholder="DPI">
-                </div>
-
-                <div class="action-button-row">
-                    <button class="btn-action btn-reset" onclick="triggerResetResolution()">RESET</button>
-                    <button class="btn-action btn-apply" onclick="triggerApplyResolution()">APPLY</button>
-                </div>
+            </div>
+            <div class="tweak-right-action">
+                <label class="switch">
+                    <input type="checkbox" id="switch-sensi" onchange="toggleSensiPanel(this.checked)">
+                    <span class="slider"></span>
+                </label>
             </div>
         </div>
 
-        <div id="profil" class="tab-content">
-            <div class="grid-profile">
-                <div class="profile-card-top"><span class="material-icons-round large-icon">group</span><div class="title-top">MODPACK V3.1</div></div>
-                <div class="profile-card-top"><span class="material-icons-round large-icon" style="color:var(--text-muted)">layers</span><div class="title-top">Version</div><div class="sub-title-top">3.1</div></div>
+        <div class="recommendation-panel" id="panel-sensi">
+            <div class="panel-header">
+                <select class="select-sensi-mode" id="sensi-preset-mode">
+                    <option value="all">All Device</option>
+                    <option value="low">Sensi Rendah</option>
+                    <option value="med">Sensi Sedang</option>
+                    <option value="high">Sensi Tinggi</option>
+                </select>
+                <button class="btn-generate" onclick="generateSensiData()">GENERATE</button>
             </div>
             
-            <a href="https://whatsapp.com/channel/0029VajWnZ6E50UfByAasT3G" target="_blank" class="social-link-card">
-                <div class="social-left-info">
-                    <img class="social-icon-img" src="https://img.icons8.com/color/48/whatsapp--v1.png" alt="WA">
-                    <div>
-                        <h3>Saluran Whatsapp</h3>
-                        <p>Join Saluran Untuk Mendapatkan Update Terbaru Informasi Penting Dan Akses Ke Fitur Serta Versi Terbaru Apk Tools</p>
-                    </div>
-                </div>
-                <span class="material-icons-round" style="font-size: 16px; color: var(--text-muted);">open_in_new</span>
-            </a>
-            
-            <a href="https://www.tiktok.com/@fanzz_xt9" target="_blank" class="social-link-card">
-                <div class="social-left-info">
-                    <img class="social-icon-img" src="https://img.icons8.com/color/48/tiktok.png" alt="TT">
-                    <div>
-                        <h3>Follow TikTok</h3>
-                        <p>Follow tiktok agar dapat info tentang update dan seputar aplikasi free yang bakalan di upload lewat tiktok resmi</p>
-                    </div>
-                </div>
-                <span class="material-icons-round" style="font-size: 16px; color: var(--text-muted);">open_in_new</span>
-            </a>
+            <div class="sensi-row-item"><span class="sensi-name">Lihat Sekeliling</span><span class="sensi-value" id="val-sekeliling">0</span></div>
+            <div class="sensi-row-item"><span class="sensi-name">Red Dot Sight</span><span class="sensi-value" id="val-reddot">0</span></div>
+            <div class="sensi-row-item"><span class="sensi-name">2x Scope</span><span class="sensi-value" id="val-2x">0</span></div>
+            <div class="sensi-row-item"><span class="sensi-name">4x Scope</span><span class="sensi-value" id="val-4x">0</span></div>
+            <div class="sensi-row-item"><span class="sensi-name">Sniper Scope</span><span class="sensi-value" id="val-sniper">0</span></div>
+            <div class="sensi-row-item"><span class="sensi-name">Tombol Kamera Bebas</span><span class="sensi-value" id="val-kamera">0</span></div>
         </div>
 
-        <div class="nav-bar-container">
-            <div class="nav-bar">
-                <div class="nav-item active" onclick="switchTab('home', this)"><span class="material-icons-round">home</span>HOME</div>
-                <div class="nav-item" onclick="switchTab('tools', this)"><span class="material-icons-round">build</span>TOOLS</div>
-                <div class="nav-item" onclick="switchTab('setting', this)"><span class="material-icons-round">settings</span>SETTING</div>
-                <div class="nav-item" onclick="switchTab('profil', this)"><span class="material-icons-round">account_circle</span>PROFIL</div>
+        <div class="tweak-card">
+            <div class="tweak-left">
+                <div class="tweak-icon-box"><span class="material-icons-round">ads_click</span></div>
+                <div class="tweak-text"><h3>Easy Drag</h3><p>Mempermudah pergerakan drag agar lebih ringan dan mudah dikontrol sehingga transisi aim terasa lebih halus</p></div>
+            </div>
+            <div class="tweak-right-action"><label class="switch"><input type="checkbox" onchange="Android.setGameTweak('easy_drag', this.checked)"><span class="slider"></span></label></div>
+        </div>
+        <div class="tweak-card">
+            <div class="tweak-left">
+                <div class="tweak-icon-box"><span class="material-icons-round">track_changes</span></div>
+                <div class="tweak-text"><h3>Drag hs</h3><p>Membantu arah pergerakan drag lebih terarah ke area target untuk mempermudah mendapatkan headshot secara konsisten</p></div>
+            </div>
+            <div class="tweak-right-action"><label class="switch"><input type="checkbox" onchange="Android.setGameTweak('drag_hs', this.checked)"><span class="slider"></span></label></div>
+        </div>
+        <div class="tweak-card">
+            <div class="tweak-left">
+                <div class="tweak-icon-box"><span class="material-icons-round">bolt</span></div>
+                <div class="tweak-text"><h3>Fps Boost</h3><p>Meningkatkan kestabilan frame rate agar tampilan lebih lancar dan responsif saat digunakan (tidak semua divice support)</p></div>
+            </div>
+            <div class="tweak-right-action"><label class="switch"><input type="checkbox" onchange="Android.setGameTweak('fps_boost', this.checked)"><span class="slider"></span></label></div>
+        </div>
+        <div class="tweak-card">
+            <div class="tweak-left">
+                <div class="tweak-icon-box"><span class="material-icons-round">tune</span></div>
+                <div class="tweak-text"><h3>Sensitivity tuning</h3><p>Menyesuaikan tingkat sensitivitas agar pergerakan aim lebih stabil halus dan sesuai dengan karakter penggunaan (tidak semua divice support)</p></div>
+            </div>
+            <div class="tweak-right-action"><label class="switch"><input type="checkbox" onchange="Android.setGameTweak('sensitivity_tuning', this.checked)"><span class="slider"></span></label></div>
+        </div>
+        <div class="tweak-card">
+            <div class="tweak-left">
+                <div class="tweak-icon-box"><span class="material-icons-round">speed</span></div>
+                <div class="tweak-text"><h3>Max performance</h3><p>Mengoptimalkan performa perangkat agar berjalan lebih stabil dan responsif saat digunakan (tidak semua divice support)</p></div>
+            </div>
+            <div class="tweak-right-action"><label class="switch"><input type="checkbox" onchange="Android.setGameTweak('max_performance', this.checked)"><span class="slider"></span></label></div>
+        </div>
+    </div>
+
+    <div id="setting" class="tab-content">
+        <div class="setting-section-title">Display Configuration</div>
+        
+        <div class="config-group">
+            <div class="config-label">Display Mode</div>
+            <div class="dropdown-container">
+                <select class="dropdown-select" id="display-mode-select">
+                    <option value="biasa">Biasa</option>
+                    <option value="ultrawide" selected>Ultrawide</option>
+                </select>
+            </div>
+
+            <div class="config-label">Resolution</div>
+            <div class="resolution-input-row">
+                <div class="input-box-wrapper">
+                    <input type="number" class="style-input" id="input-width" placeholder="Width" oninput="calculateHeight(this.value)">
+                </div>
+                <div class="input-box-wrapper">
+                    <input type="number" class="style-input" id="input-height" placeholder="Height" readonly>
+                </div>
+            </div>
+
+            <div class="config-label">Density</div>
+            <div class="dropdown-container" style="margin-bottom: 16px;">
+                <input type="number" class="style-input" id="input-dpi" placeholder="DPI">
+            </div>
+
+            <div class="action-button-row">
+                <button class="btn-action btn-reset" onclick="triggerResetResolution()">RESET</button>
+                <button class="btn-action btn-apply" onclick="triggerApplyResolution()">APPLY</button>
             </div>
         </div>
+    </div>
 
-    </div> <!-- end #main-content -->
+    <div id="profil" class="tab-content">
+        <div class="grid-profile">
+            <div class="profile-card-top"><span class="material-icons-round large-icon">group</span><div class="title-top">MODPACK V3.1</div></div>
+            <div class="profile-card-top"><span class="material-icons-round large-icon" style="color:var(--text-muted)">layers</span><div class="title-top">Version</div><div class="sub-title-top">3.1</div></div>
+        </div>
+        
+        <a href="https://whatsapp.com/channel/0029VajWnZ6E50UfByAasT3G" target="_blank" class="social-link-card">
+            <div class="social-left-info">
+                <img class="social-icon-img" src="https://img.icons8.com/color/48/whatsapp--v1.png" alt="WA">
+                <div>
+                    <h3>Saluran Whatsapp</h3>
+                    <p>Join Saluran Untuk Mendapatkan Update Terbaru Informasi Penting Dan Akses Ke Fitur Serta Versi Terbaru Apk Tools</p>
+                </div>
+            </div>
+            <span class="material-icons-round" style="font-size: 16px; color: var(--text-muted);">open_in_new</span>
+        </a>
+        
+        <a href="https://www.tiktok.com/@fanzz_xt9" target="_blank" class="social-link-card">
+            <div class="social-left-info">
+                <img class="social-icon-img" src="https://img.icons8.com/color/48/tiktok.png" alt="TT">
+                <div>
+                    <h3>Follow TikTok</h3>
+                    <p>Follow tiktok agar dapat info tentang update dan seputar aplikasi free yang bakalan di upload lewat tiktok resmi</p>
+                </div>
+            </div>
+            <span class="material-icons-round" style="font-size: 16px; color: var(--text-muted);">open_in_new</span>
+        </a>
+    </div>
+
+    <div class="nav-bar-container">
+        <div class="nav-bar">
+            <div class="nav-item active" onclick="switchTab('home', this)"><span class="material-icons-round">home</span>HOME</div>
+            <div class="nav-item" onclick="switchTab('tools', this)"><span class="material-icons-round">build</span>TOOLS</div>
+            <div class="nav-item" onclick="switchTab('setting', this)"><span class="material-icons-round">settings</span>SETTING</div>
+            <div class="nav-item" onclick="switchTab('profil', this)"><span class="material-icons-round">account_circle</span>PROFIL</div>
+        </div>
+    </div>
 
     <script>
-        // ==================== LOADING PREMIUM 20 DETIK ====================
-        function startPremiumLoading() {
-            const loadingScreen = document.getElementById('loading-screen');
-            const progressBar = document.getElementById('progress-bar');
-            const loadingText = document.getElementById('loading-text');
-            const mainContent = document.getElementById('main-content');
+        // Efek smooth fade diaktifkan sesaat setelah halaman dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            document.body.style.opacity = '1';
+        });
 
-            // Mulai progress bar (20 detik)
-            setTimeout(() => {
-                progressBar.style.width = '100%';
-            }, 80);
-
-            // Pesan loading berganti-ganti
-            const messages = [
-                "Initializing Premium Core...",
-                "Connecting to Secure Server...",
-                "Loading Device Specifications...",
-                "Optimizing Game Tweaks...",
-                "Preparing Sensitivity Engine...",
-                "Finalizing Premium Experience..."
-            ];
-            
-            let msgIndex = 0;
-            const msgInterval = setInterval(() => {
-                msgIndex = (msgIndex + 1) % messages.length;
-                loadingText.style.opacity = '0';
-                setTimeout(() => {
-                    loadingText.innerText = messages[msgIndex];
-                    loadingText.style.opacity = '1';
-                }, 220);
-            }, 3200);
-
-            // Setelah 20 detik
-            setTimeout(() => {
-                clearInterval(msgInterval);
-                
-                // Fade out loading
-                loadingScreen.style.opacity = '0';
-                
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
-                    
-                    // Fade in UI utama
-                    mainContent.style.opacity = '1';
-                    
-                    // Jalankan data realtime setelah loading selesai
-                    if (typeof loadRealtimeData === 'function') {
-                        loadRealtimeData();
-                    }
-                }, 650);
-            }, 20000);
-        }
-
-        // ==================== SCRIPT ASLI (dengan sedikit penyesuaian) ====================
+        // Hitung Otomatis Height Ultrawide (1120 -> 3111 persis seperti di video)
         function calculateHeight(widthValue) {
             var heightInput = document.getElementById('input-height');
             if (!widthValue || widthValue === "") {
@@ -565,6 +408,7 @@
             let calculatedHeight;
 
             if (mode === "ultrawide") {
+                // Skala pengali disesuaikan persis untuk menghasilkan nilai 3111 dari input 1120
                 calculatedHeight = Math.round(width * 2.77767857);
             } else {
                 calculatedHeight = Math.round(width * (16 / 9));
@@ -587,6 +431,8 @@
                 document.getElementById('txt-build').innerText = Android.getBuildID();
             }
         }
+
+        document.addEventListener("DOMContentLoaded", function() { loadRealtimeData(); });
 
         function switchTab(tabId, element) {
             var contents = document.querySelectorAll('.tab-content');
@@ -671,12 +517,6 @@
             document.getElementById('input-dpi').value = "";
             if (typeof Android !== "undefined") { Android.resetResolution(); }
         }
-
-        // ==================== INISIALISASI ====================
-        window.addEventListener('DOMContentLoaded', () => {
-            // Mulai loading premium 20 detik
-            startPremiumLoading();
-        });
     </script>
 </body>
 </html>

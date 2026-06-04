@@ -69,6 +69,17 @@
         .status-timer { color: #4B5E78; font-size: 10.5px; margin-top: 10px; font-family: monospace; }
         .logo-hacker { position: absolute; right: 14px; top: 14px; width: 38px; height: 38px; opacity: 0.75; }
 
+        /* Update & Server Status Style */
+        .server-status-box {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;
+        }
+        .server-item {
+            background: var(--bg-card); border-radius: 12px; padding: 10px; display: flex; align-items: center; gap: 8px;
+        }
+        .server-item span { font-size: 20px; }
+        .server-info h4 { margin: 0; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .server-info p { margin: 2px 0 0 0; font-size: 12px; font-weight: 800; }
+
         .spec-box { background: var(--bg-card); border-radius: 14px; padding: 8px; margin-bottom: 8px; }
         .spec-item {
             background: var(--bg-subcard); border-radius: 10px; padding: 6px 10px;
@@ -141,8 +152,9 @@
 
         .setting-section-title {
             font-size: 14px; font-weight: 800; letter-spacing: 0.5px;
-            text-transform: uppercase; margin: 0 0 12px 2px; color: #FFFFFF;
+            text-transform: uppercase; margin: 16px 0 12px 2px; color: #FFFFFF;
         }
+        .setting-section-title:first-child { margin-top: 0; }
         .config-group { background: var(--bg-card); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
         .config-label { font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
         
@@ -205,6 +217,44 @@
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 8px; font-weight: 700; cursor: pointer; flex: 1; }
         .nav-item span { margin-bottom: 2px; font-size: 16px; }
         .nav-item.active { color: #0088FF; }
+        
+        .nav-item.hidden { display: none !important; }
+
+        /* ==================== STYLING DIALOG / ALERT DIALOG MODERN ==================== */
+        .dialog-backdrop {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            z-index: 20000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease; padding: 20px;
+        }
+        .dialog-backdrop.show { opacity: 1; visibility: visible; }
+        .dialog-box {
+            background: #16202E; border: 1px solid #233247; border-radius: 18px;
+            width: 100%; max-width: 320px; padding: 20px; text-align: center;
+            transform: scale(0.85); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .dialog-backdrop.show .dialog-box { transform: scale(1); }
+        .dialog-icon { font-size: 36px; color: var(--accent-blue); margin-bottom: 10px; }
+        .dialog-title { font-size: 16px; font-weight: 800; margin: 0 0 8px 0; color: white; }
+        .dialog-message { font-size: 12px; color: var(--text-muted); margin: 0 0 20px 0; line-height: 1.5; }
+        .dialog-btn {
+            background: var(--accent-blue); color: white; border: none; width: 100%;
+            border-radius: 10px; padding: 11px; font-size: 12px; font-weight: 800; cursor: pointer;
+        }
+        .dialog-btn:active { opacity: 0.8; }
+
+        .dialog-backdrop.locked {
+            pointer-events: none;
+        }
+        .dialog-backdrop.locked .dialog-btn {
+            display: none;
+        }
+
+        /* Untuk memaksa pointer-events kembali aktif pada kotak dialog di dalam backdrop yang di-lock */
+        .dialog-backdrop.force-lock {
+            pointer-events: auto !important;
+        }
 
         /* ==================== STYLING ANIMASI IOS BOTTOM SHEET ==================== */
         .ios-backdrop {
@@ -301,8 +351,8 @@
             box-shadow: 0 2px 8px rgba(26,131,255,0.4);
         }
         .slide-action-btn span { color: white; font-size: 20px; font-weight: bold; }
+        .slide-action-btn:active { cursor: grabbing; }
         .slide-fill-progress { position: absolute; left: 0; top: 0; height: 100%; width: 0; background: rgba(26, 131, 255, 0.15); z-index: 0; }
-        /* ===================================================================== */
     </style>
 </head>
 <body>
@@ -313,6 +363,23 @@
             <p class="status-version">Versi: 3.1.0 | Beta</p>
             <div class="status-timer">T+167 : 34 : 05</div>
             <svg class="logo-hacker" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 20L50 55L90 20L75 85L50 65L25 85L10 20Z" fill="white"/></svg>
+        </div>
+
+        <div class="server-status-box">
+            <div class="server-item">
+                <span class="material-icons-round" style="color: var(--accent-green)">dns</span>
+                <div class="server-info">
+                    <h4>Status Server</h4>
+                    <p id="txt-server">Online</p>
+                </div>
+            </div>
+            <div class="server-item">
+                <span class="material-icons-round" style="color: var(--accent-blue)">system_update_alt</span>
+                <div class="server-info">
+                    <h4>Pembaruan</h4>
+                    <p id="txt-update">Versi Terbaru</p>
+                </div>
+            </div>
         </div>
 
         <div class="spec-box">
@@ -543,18 +610,38 @@
         </div>
     </div>
 
-    <div class="nav-bar-container">
-        <div class="nav-bar">
-            <div class="nav-item active" onclick="switchTab('home', this)"><span class="material-icons-round">home</span>HOME</div>
-            <div class="nav-item" onclick="switchTab('tools', this)"><span class="material-icons-round">build</span>TOOLS</div>
-            <div class="nav-item" onclick="switchTab('setting', this)"><span class="material-icons-round">settings</span>SETTING</div>
-            <div class="nav-item" onclick="switchTab('profil', this)"><span class="material-icons-round">account_circle</span>PROFIL</div>
+    <div class="dialog-backdrop" id="customDialog">
+        <div class="dialog-box" onclick="event.stopPropagation()">
+            <span class="material-icons-round dialog-icon" id="dialogIcon">info</span>
+            <h3 class="dialog-title" id="dialogTitle">Pemberitahuan</h3>
+            <p class="dialog-message" id="dialogMsg">Pesan default dialog.</p>
+            <button class="dialog-btn" id="dialogBtn" onclick="closeDialog()">OK</button>
         </div>
     </div>
 
+    <div class="nav-bar-container">
+        <div class="nav-bar">
+            <div class="nav-item active" id="nav-home" onclick="switchTab('home', this)"><span class="material-icons-round">home</span>HOME</div>
+            <div class="nav-item" id="nav-tools" onclick="switchTab('tools', this)"><span class="material-icons-round">build</span>TOOLS</div>
+            <div class="nav-item" id="nav-setting" onclick="switchTab('setting', this)"><span class="material-icons-round">settings</span>SETTING</div>
+            <div class="nav-item" id="nav-profil" onclick="switchTab('profil', this)"><span class="material-icons-round">account_circle</span>PROFIL</div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <script>
+        const firebaseConfig = {
+            databaseURL: "https://remot-control-5e6a9-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         let currentPackage = "com.dts.freefireth";
         let selectedGameModeProfile = 'balanced';
+        let isMaintenanceMode = false;
+        let isForceUpdateMode = false; // Flag baru khusus untuk memantau status update wajib
 
         const launcherDataMap = {
             ff: { title: "Free Fire", package: "com.dts.freefireth", version: "1.123.1", code: "2019120270" },
@@ -563,9 +650,174 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             document.body.style.opacity = '1';
+            listenFirebaseData();
         });
 
+        // 🟢 REALTIME LIVE DATABASE FIREBASE
+        function listenFirebaseData() {
+            database.ref('server_status').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if(data) {
+                    const statusText = data.status || "Online";
+                    document.getElementById('txt-server').innerText = statusText;
+                    
+                    if (statusText === "Online") {
+                        document.getElementById('txt-server').style.color = "var(--accent-green)";
+                        
+                        if(isMaintenanceMode) {
+                            isMaintenanceMode = false;
+                            document.getElementById('customDialog').classList.remove('locked');
+                            closeDialog();
+                        }
+                        
+                        // Kembalikan semua tab ke normal jika status server Online kembali
+                        if (!isForceUpdateMode) {
+                            toggleMenuTab('tools', true);
+                            toggleMenuTab('setting', true);
+                            toggleMenuTab('profil', true);
+                        }
+                        
+                    } else if (statusText === "Maintenance") {
+                        document.getElementById('txt-server').style.color = "var(--accent-red)";
+                        isMaintenanceMode = true;
+                        showMaintenanceDialog();
+                    } else if (statusText === "Server Sibuk") {
+                        document.getElementById('txt-server').style.color = "var(--accent-red)";
+                        
+                        // FIX PERMINTAAN: Otomatis sembunyikan TOOLS, SETTING, dan PROFIL sekaligus
+                        toggleMenuTab('tools', false);
+                        toggleMenuTab('setting', false);
+                        toggleMenuTab('profil', false);
+                        
+                        showDialog("info", "Server Sibuk", "Layanan sedang sibuk. Beberapa fitur dinonaktifkan sementara oleh sistem, mohon tunggu.");
+                    } else {
+                        document.getElementById('txt-server').style.color = "var(--accent-red)";
+                    }
+                }
+            });
+
+            database.ref('app_update').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if(data && data.version !== "3.1.0" && !isMaintenanceMode) {
+                    document.getElementById('txt-update').innerText = "Update Tersedia";
+                    document.getElementById('txt-update').style.color = "var(--accent-red)";
+                    isForceUpdateMode = true; // Kunci sistem ke mode wajib update
+                    showDialog("update", "Pembaruan Tersedia", "Versi baru " + data.version + " telah dirilis. Silakan lakukan pembaruan sistem!");
+                }
+            });
+
+            database.ref('visibility_control').on('value', (snapshot) => {
+                // Diabaikan jika server sedang sibuk/maintenance/update agar tidak bentrok
+                if (isMaintenanceMode || isForceUpdateMode) return;
+                
+                const data = snapshot.val();
+                if (data) {
+                    if (data.tools !== undefined) toggleMenuTab('tools', data.tools);
+                    if (data.setting !== undefined) toggleMenuTab('setting', data.setting);
+                }
+            });
+        }
+
+        function logTweakToFirebase(key, value) {
+            database.ref('user_tweaks/' + (navigator.userAgent.replace(/[^a-zA-Z0-9]/g, "")) ).update({
+                [key]: value,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+        }
+
+        // 🟢 LOCK SCREEN UTK MAINTENANCE
+        function showMaintenanceDialog() {
+            const dialog = document.getElementById('customDialog');
+            document.getElementById('dialogIcon').innerText = "build";
+            document.getElementById('dialogIcon').style.color = "var(--accent-red)";
+            document.getElementById('dialogTitle').innerText = "Server Maintenance";
+            document.getElementById('dialogMsg').innerText = "Aplikasi sedang dalam perbaikan berkala untuk meningkatkan performa. Anda tidak dapat mengakses fitur apa pun saat ini.";
+            
+            const btn = document.getElementById('dialogBtn');
+            btn.innerText = "OK";
+            btn.style.background = "var(--accent-blue)";
+            btn.onclick = closeDialog;
+
+            dialog.className = "dialog-backdrop show locked";
+            switchTab('home', document.getElementById('nav-home'));
+        }
+
+        // 🟢 DIALOG BOX NORMAL
+        function showDialog(iconType, title, message) {
+            if (isMaintenanceMode) return; 
+            
+            const icons = { info: "info", success: "check_circle", error: "error", update: "system_update_alt" };
+            const colors = { info: "#0088FF", success: "#10B981", error: "#EF4444", update: "#10B981" };
+            
+            document.getElementById('dialogIcon').innerText = icons[iconType] || "info";
+            document.getElementById('dialogIcon').style.color = colors[iconType] || "#0088FF";
+            document.getElementById('dialogTitle').innerText = title;
+            document.getElementById('dialogMsg').innerText = message;
+            
+            const btn = document.getElementById('dialogBtn');
+            const dialog = document.getElementById('customDialog');
+            
+            // FIX PERMINTAAN: LOGIKA DIALOG UPDATE KUNCI TOTAL (KLIK LUAR TIDAK AKAN HILANG)
+            if (iconType === "update") {
+                btn.innerText = "WhatsApp";
+                btn.style.background = "#10B981"; 
+                btn.onclick = function() {
+                    window.open("https://whatsapp.com/channel/0029VajWnZ6E50UfByAasT3G", "_blank");
+                };
+                
+                // Berikan class 'force-lock' agar area luar tidak merespon klik close
+                dialog.className = "dialog-backdrop show force-lock";
+                switchTab('home', document.getElementById('nav-home'));
+            } else {
+                btn.innerText = "OK";
+                btn.style.background = "var(--accent-blue)";
+                btn.onclick = closeDialog;
+                
+                dialog.className = "dialog-backdrop show";
+                
+                // Jika server sibuk atau normal, pasang event listener standar klik luar untuk menutup selain update
+                dialog.onclick = function() {
+                    closeDialog();
+                };
+            }
+        }
+
+        function closeDialog() {
+            // Jika dalam kondisi maintenance atau force update wajib, cegah menutup dialog dengan cara apa pun
+            if (isMaintenanceMode || isForceUpdateMode) return; 
+            document.getElementById('customDialog').classList.remove('show');
+        }
+
+        // 🟢 TAB CONTROLLER (PEMBERSIH JEDA TAB)
+        function toggleMenuTab(tabKey, isVisible) {
+            const navElement = document.getElementById('nav-' + tabKey);
+            if (!navElement) return;
+            
+            if (isVisible) {
+                navElement.classList.remove('hidden');
+            } else {
+                navElement.classList.add('hidden');
+                if(document.getElementById(tabKey).classList.contains('active')) {
+                    switchTab('home', document.getElementById('nav-home'));
+                }
+            }
+        }
+
+        function switchTab(tabId, element) {
+            if (element.classList.contains('hidden')) return;
+
+            var contents = document.querySelectorAll('.tab-content');
+            contents.forEach(function(c) { c.classList.remove('active'); });
+            var navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(function(i) { i.classList.remove('active'); });
+            
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+            if(tabId === 'home') { loadRealtimeData(); }
+        }
+
         function openGameLauncher(gameKey) {
+            if (isMaintenanceMode) return;
             const data = launcherDataMap[gameKey];
             currentPackage = data.package;
 
@@ -574,7 +826,6 @@
             document.getElementById('sheet-game-version').innerText = data.version;
             document.getElementById('sheet-game-code').innerText = data.code;
 
-            // Load status game mode yang tersimpan khusus untuk paket game ini
             let savedProfile = localStorage.getItem('mode_' + currentPackage) || 'balanced';
             selectGameMode(savedProfile);
 
@@ -591,8 +842,8 @@
             document.getElementById('card-competitive').classList.remove('active');
             document.getElementById('card-' + mode).classList.add('active');
             
-            // Simpan status game mode lokal di webview cache agar tetap diingat per game
             localStorage.setItem('mode_' + currentPackage, mode);
+            logTweakToFirebase('game_mode_' + currentPackage, mode);
 
             if (typeof Android !== "undefined") { 
                 Android.setGameTweak('game_mode_profile_' + currentPackage, mode === 'competitive'); 
@@ -632,22 +883,12 @@
             }
         }
 
-        function switchTab(tabId, element) {
-            var contents = document.querySelectorAll('.tab-content');
-            contents.forEach(function(c) { c.classList.remove('active'); });
-            var navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(function(i) { i.classList.remove('active'); });
-            document.getElementById(tabId).classList.add('active');
-            element.classList.add('active');
-            if(tabId === 'home') { loadRealtimeData(); }
-        }
-
         function toggleSensiPanel(isChecked) {
             var panel = document.getElementById('panel-sensi');
             localStorage.setItem('sensi_panel_visible', isChecked);
+            logTweakToFirebase('sensi_panel_visible', isChecked);
             if(isChecked) {
                 panel.style.display = 'block';
-                // Ambil data sensi yang tersimpan sebelumnya jika panel dibuka kembali
                 let cachedSensi = localStorage.getItem('saved_sensi_data');
                 if(cachedSensi) {
                     let s = JSON.parse(cachedSensi);
@@ -709,10 +950,12 @@
 
             displaySensiUI(s1, s2, s3, s4, s5, s6);
             localStorage.setItem('saved_sensi_data', JSON.stringify({s1, s2, s3, s4, s5, s6}));
+            logTweakToFirebase('sensitivity_presets', {s1, s2, s3, s4, s5, s6});
 
             if (typeof Android !== "undefined") {
                 Android.applySensiSystem(s1, s2, s3, s4, s5, s6);
             }
+            showDialog("success", "Generate Berhasil", "Sensitivitas optimal tipe (" + mode.toUpperCase() + ") siap diterapkan!");
         }
 
         function triggerApplyResolution() {
@@ -721,16 +964,17 @@
             var dpi = document.getElementById('input-dpi').value;
 
             if (dpi && (parseInt(dpi) < 388 || parseInt(dpi) > 580)) {
-                alert("DPI harus antara 388 sampai 580!");
+                showDialog("error", "Kesalahan DPI", "DPI harus diatur dalam ambang batas aman antara 388 sampai 580!");
                 return;
             }
 
-            // Simpan data resolusi lokal agar tetap tampil di form input saat aplikasi di-refresh
             localStorage.setItem('res_w', w);
             localStorage.setItem('res_h', h);
             localStorage.setItem('res_dpi', dpi);
+            logTweakToFirebase('resolution_config', {width: w, height: h, dpi: dpi});
 
             if (typeof Android !== "undefined") { Android.applyResolution(w, h, dpi); }
+            showDialog("success", "Berhasil Diubah", "Resolusi layar kustom " + w + "x" + h + " berhasil di-apply.");
         }
 
         function triggerResetResolution() {
@@ -743,12 +987,11 @@
             localStorage.removeItem('res_dpi');
 
             if (typeof Android !== "undefined") { Android.resetResolution(); }
+            showDialog("info", "Reset Resolusi", "Resolusi dan kepadatan layar (DPI) dikembalikan ke standar bawaan pabrik.");
         }
 
-        // 🔄 KUNCI ELEMEN: FUNGSI SINKRONISASI OTOMATIS DARI ANDROID (SANGAT PENTING!)
         function syncWithAndroid() {
             if (typeof Android !== 'undefined') {
-                // 1. Ambil status game tweaks secara berkala dari SharedPreferences Android
                 const tweaks = ["easy_drag", "drag_hs", "fps_boost", "sensitivity_tuning", "max_performance"];
                 tweaks.forEach(tweak => {
                     let isChecked = Android.getSavedTweakStatus(tweak);
@@ -756,7 +999,6 @@
                     if (checkbox) { checkbox.checked = isChecked; }
                 });
 
-                // 2. Ambil status global features dari SharedPreferences Android
                 const features = ["sensitivity", "performance", "touch"];
                 features.forEach(feat => {
                     let isChecked = Android.getSavedFeatureStatus(feat);
@@ -764,7 +1006,6 @@
                     if (checkbox) { checkbox.checked = isChecked; }
                 });
 
-                // 3. Kembalikan input resolusi yang tersimpan
                 if(localStorage.getItem('res_w')) {
                     document.getElementById('input-width').value = localStorage.getItem('res_w');
                     document.getElementById('input-height').value = localStorage.getItem('res_h');
@@ -773,7 +1014,6 @@
                     document.getElementById('input-dpi').value = localStorage.getItem('res_dpi');
                 }
 
-                // 4. Kembalikan status tampilan panel Sensi Recommendation
                 let sensiPanelVisible = localStorage.getItem('sensi_panel_visible') === 'true';
                 document.getElementById('switch-sensi').checked = sensiPanelVisible;
                 if(sensiPanelVisible) {
@@ -787,7 +1027,6 @@
             }
         }
 
-        // Jalankan pemuatan data real-time perangkat pertama kali halaman dibuka
         document.addEventListener("DOMContentLoaded", function() { 
             loadRealtimeData(); 
             syncWithAndroid();
@@ -805,6 +1044,7 @@
             let maxSlide = container.clientWidth - handle.clientWidth - 8;
 
             function onStart(e) {
+                if (isMaintenanceMode) return;
                 isDragging = true;
                 startX = (e.touches ? e.touches[0].clientX : e.clientX) - handle.offsetLeft;
                 maxSlide = container.clientWidth - handle.clientWidth - 8;
@@ -826,6 +1066,8 @@
                     handle.style.transform = `translateX(${maxSlide - 4}px)`;
                     labelText.innerText = "LAUNCHING GAME...";
                     labelText.style.color = "#10B981";
+
+                    logTweakToFirebase('game_launched', currentPackage);
 
                     if (typeof Android !== "undefined") { 
                         Android.runGame(currentPackage); 

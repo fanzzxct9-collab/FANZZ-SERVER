@@ -27,12 +27,10 @@
             user-select: none;
         }
 
-        /* Menghilangkan jeda putih dengan menyamakan warna background dasar sejak awal */
         html {
             background-color: var(--bg-primary);
         }
 
-        /* Anti white flash + smooth fade (khusus untuk WebView / Sketchware) */
         html, body {
             background-color: var(--bg-primary) !important;
         }
@@ -90,56 +88,14 @@
         .support-left p { margin: 1px 0 0 0; font-size: 9.5px; color: var(--text-muted); }
         .support-socials { display: flex; gap: 10px; align-items: center; }
 
-        .game-launcher-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .game-launcher-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
         .game-card-btn {
             background: var(--bg-card); border-radius: 12px; padding: 8px;
             display: flex; align-items: center; gap: 8px; cursor: pointer;
-            border: 1px solid transparent; transition: all 0.3s ease;
-        }
-        .game-card-btn.disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-        .game-card-btn.ready {
-            border-color: var(--accent-green);
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
         }
         .game-icon-img { width: 30px; height: 30px; border-radius: 8px; object-fit: cover; }
         .game-meta h3 { margin: 0; font-size: 11px; font-weight: 700; }
         .game-meta p { margin: 0; font-size: 8.5px; color: var(--text-muted); }
-
-        /* MODIFIKASI TERBARU: GAME OPTIMIZER STYLING */
-        .optimizer-container {
-            background: var(--bg-card); border-radius: 14px; padding: 12px; margin-bottom: 10px;
-        }
-        .opt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .opt-title { font-size: 11.5px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
-        .opt-title span { font-size: 16px; color: var(--accent-blue); }
-        
-        .opt-selector {
-            background: var(--bg-subcard); color: white; border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 6px; padding: 3px 6px; font-size: 10px; font-weight: 600; outline: none;
-        }
-
-        /* Slide to Unlock / Login Style */
-        .slide-lock-wrapper {
-            position: relative; background: var(--input-bg); height: 38px; 
-            border-radius: 20px; display: flex; align-items: center; 
-            justify-content: center; overflow: hidden; border: 1px solid rgba(255,255,255,0.03);
-        }
-        .slide-text { font-size: 11px; font-weight: 700; color: var(--text-muted); pointer-events: none; z-index: 2; }
-        .slide-handle {
-            position: absolute; left: 2px; top: 2px; width: 34px; height: 32px;
-            background: var(--accent-blue); border-radius: 18px; display: flex;
-            align-items: center; justify-content: center; cursor: grab; z-index: 3;
-            box-shadow: 0 2px 6px rgba(0,136,255,0.4); transition: transform 0.1s ease;
-        }
-        .slide-handle span { color: white; font-size: 18px; }
-        .slide-progress {
-            position: absolute; left: 0; top: 0; height: 100%; width: 0;
-            background: rgba(0, 136, 255, 0.15); z-index: 1; border-radius: 20px 0 0 20px;
-        }
 
         .social-icon-img { width: 22px; height: 22px; object-fit: contain; }
 
@@ -207,7 +163,6 @@
         .style-input {
             width: 100%; background: var(--input-bg); color: #FFFFFF; border: 1px solid rgba(255,255,255,0.05);
             border-radius: 10px; padding: 12px; font-size: 13px; font-weight: 600; text-align: center; outline: none;
-            caret-color: transparent;
         }
         .style-input::placeholder { color: #3A4B61; font-weight: 600; text-align: center; }
 
@@ -246,10 +201,108 @@
         input:checked + .slider:before { transform: translateX(16px); }
 
         .nav-bar-container { position: fixed; bottom: 10px; left: 10px; right: 10px; z-index: 999; }
-        .nav-bar { display: flex; justify-content: space-around; background: rgba(22, 32, 46, 0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 6px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.03); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 8px; font-weight: 700; cursor: pointer; flex: 1; }
-        .nav-item span { margin-bottom: 2px; font-size: 16px; }
+        .nav-bar { display: flex; justify-content: space-around; background: rgba(22, 32, 46, 0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 8px 6px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.03); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 9px; font-weight: 700; cursor: pointer; flex: 1; }
+        .nav-item span { margin-bottom: 3px; font-size: 18px; }
         .nav-item.active { color: #0088FF; }
+
+        /* ==================== STYLING ANIMASI IOS BOTTOM SHEET ==================== */
+        .ios-backdrop {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .ios-backdrop.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .launcher-box-sheet {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #141D29;
+            border-radius: 24px 24px 0 0;
+            padding: 10px 20px 32px 20px;
+            z-index: 10000;
+            box-shadow: 0 -8px 32px rgba(0,0,0,0.4);
+            transform: translateY(100%);
+            transition: transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.12);
+        }
+        .ios-backdrop.show .launcher-box-sheet {
+            transform: translateY(0);
+        }
+
+        .ios-drag-handle {
+            width: 40px;
+            height: 5px;
+            background: #314257;
+            border-radius: 3px;
+            margin: 0 auto 18px auto;
+            cursor: pointer;
+        }
+
+        .game-header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        .game-title-left h3 {
+            margin: 0; font-size: 16px; font-weight: 700; color: #FFFFFF; letter-spacing: 0.3px;
+        }
+        .game-title-left p {
+            margin: 4px 0 0 0; font-size: 11.5px; color: #5C6E84; font-weight: 500;
+        }
+        .game-version-right { text-align: right; }
+        .game-version-right .v-num { font-size: 13px; font-weight: 700; color: #2D74DA; }
+        .game-version-right .v-code { margin: 4px 0 0 0; font-size: 11.5px; color: #5C6E84; font-weight: 500; }
+
+        .mode-selection-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .mode-card {
+            background: transparent;
+            border: 1px solid #28374A;
+            border-radius: 20px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .mode-card.active {
+            background: #1A62B1;
+            border-color: #1A62B1;
+        }
+        .mode-card-title {
+            display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 14px; font-weight: 700; color: #FFFFFF;
+        }
+        .mode-card-title span { font-size: 18px; }
+        .mode-card-desc {
+            margin: 0; font-size: 11px; line-height: 1.5; color: #8CA0BA; font-weight: 500;
+        }
+        .mode-card.active .mode-card-desc { color: #DFE8F5; }
+
+        .slide-action-container {
+            position: relative; background: #0E151F; height: 52px; border-radius: 26px;
+            display: flex; align-items: center; justify-content: flex-end; padding-right: 20px; overflow: hidden;
+        }
+        .slide-action-text { font-size: 11px; font-weight: 800; color: #61758F; letter-spacing: 0.8px; pointer-events: none; z-index: 1; }
+        .slide-action-btn {
+            position: absolute; left: 4px; top: 4px; width: 44px; height: 44px; background: #1A83FF;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: grab; z-index: 2;
+            box-shadow: 0 2px 8px rgba(26,131,255,0.4);
+        }
+        .slide-action-btn span { color: white; font-size: 20px; font-weight: bold; }
+        .slide-fill-progress { position: absolute; left: 0; top: 0; height: 100%; width: 0; background: rgba(26, 131, 255, 0.15); z-index: 0; }
+        /* ===================================================================== */
     </style>
 </head>
 <body>
@@ -284,33 +337,13 @@
 
     <div id="tools" class="tab-content">
         <div class="game-launcher-grid">
-            <div class="game-card-btn disabled" id="btn-ff-normal" onclick="Android.runGame('com.dts.freefireth')">
+            <div class="game-card-btn" onclick="openGameLauncher('ff')">
                 <img class="game-icon-img" src="https://fanzzxct9-collab.github.io/FANZZ-SERVER/ff_icon.png" onerror="this.src='https://img.icons8.com/color/96/free-fire.png'" alt="FF">
                 <div class="game-meta"><h3>Free Fire</h3><p>com.dts.freefireth</p></div>
             </div>
-            <div class="game-card-btn disabled" id="btn-ff-max" onclick="Android.runGame('com.dts.freefiremax')">
+            <div class="game-card-btn" onclick="openGameLauncher('ffmax')">
                 <img class="game-icon-img" src="https://fanzzxct9-collab.github.io/FANZZ-SERVER/ffmax_icon.png" onerror="this.src='https://img.icons8.com/color/96/free-fire.png'" alt="FF MAX">
                 <div class="game-meta"><h3>Free Fire MAX</h3><p>com.dts.freefiremax</p></div>
-            </div>
-        </div>
-
-        <div class="optimizer-container">
-            <div class="opt-header">
-                <div class="opt-title">
-                    <span class="material-icons-round">bolt</span> Launcher Optimizer
-                </div>
-                <select class="opt-selector" id="perf-mode-select">
-                    <option value="biasa">Biasa (Normal)</option>
-                    <option value="gempal">Gempal (RAM 2GB Max)</option>
-                </select>
-            </div>
-            
-            <div class="slide-lock-wrapper" id="slide-lock-container">
-                <div class="slide-progress" id="slide-bg-progress"></div>
-                <div class="slide-text" id="slide-label-text">GESER UNTUK OPTIMASI & LOGIN</div>
-                <div class="slide-handle" id="slider-trigger">
-                    <span class="material-icons-round">keyboard_double_arrow_right</span>
-                </div>
             </div>
         </div>
 
@@ -388,7 +421,6 @@
 
     <div id="setting" class="tab-content">
         <div class="setting-section-title">Display Configuration</div>
-        
         <div class="config-group">
             <div class="config-label">Display Mode</div>
             <div class="dropdown-container">
@@ -452,6 +484,42 @@
         </a>
     </div>
 
+    <div class="ios-backdrop" id="launcherBottomSheet" onclick="closeGameLauncher()">
+        <div class="launcher-box-sheet" onclick="event.stopPropagation()">
+            <div class="ios-drag-handle" onclick="closeGameLauncher()"></div>
+
+            <div class="game-header-info">
+                <div class="game-title-left">
+                    <h3 id="sheet-game-title">Free Fire</h3>
+                    <p id="sheet-game-package">com.dts.freefireth</p>
+                </div>
+                <div class="game-version-right">
+                    <div class="v-num" id="sheet-game-version">1.123.1</div>
+                    <div class="v-code" id="sheet-game-code">2019120270</div>
+                </div>
+            </div>
+
+            <div class="mode-selection-grid">
+                <div class="mode-card active" id="card-balanced" onclick="selectGameMode('balanced')">
+                    <div class="mode-card-title"><span class="material-icons-round">scale</span> Balanced</div>
+                    <p class="mode-card-desc">Mode seimbang untuk gameplay stabil dan nyaman, cocok untuk bermain harian dengan performa yang konsisten.</p>
+                </div>
+                <div class="mode-card" id="card-competitive" onclick="selectGameMode('competitive')">
+                    <div class="mode-card-title"><span class="material-icons-round">rocket_launch</span> Competitive</div>
+                    <p class="mode-card-desc">Mode performa tinggi untuk gameplay cepat dan responsif, dirancang untuk player kompetitif dan permainan kompetitif.</p>
+                </div>
+            </div>
+
+            <div class="slide-action-container" id="slide-lock-container">
+                <div class="slide-fill-progress" id="slide-bg-progress"></div>
+                <div class="slide-action-text" id="slide-label-text">SLIDE TO LOGIN</div>
+                <div class="slide-action-btn" id="slider-trigger">
+                    <span class="material-icons-round">double_arrow</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="nav-bar-container">
         <div class="nav-bar">
             <div class="nav-item active" onclick="switchTab('home', this)"><span class="material-icons-round">home</span>HOME</div>
@@ -462,19 +530,51 @@
     </div>
 
     <script>
-        // Anti White-Flash WebView Engine
+        let currentPackage = "com.dts.freefireth";
+        let selectedGameModeProfile = 'balanced';
+
+        const launcherDataMap = {
+            ff: { title: "Free Fire", package: "com.dts.freefireth", version: "1.123.1", code: "2019120270" },
+            ffmax: { title: "Free Fire MAX", package: "com.dts.freefiremax", version: "1.125.2", code: "2026040188" }
+        };
+
         window.addEventListener('DOMContentLoaded', () => {
             document.body.style.opacity = '1';
         });
 
-        // Hitung Otomatis Resolusi Ultrawide (1120 X 3111)
+        function openGameLauncher(gameKey) {
+            const data = launcherDataMap[gameKey];
+            currentPackage = data.package;
+
+            document.getElementById('sheet-game-title').innerText = data.title;
+            document.getElementById('sheet-game-package').innerText = data.package;
+            document.getElementById('sheet-game-version').innerText = data.version;
+            document.getElementById('sheet-game-code').innerText = data.code;
+
+            document.getElementById('launcherBottomSheet').classList.add('show');
+        }
+
+        function closeGameLauncher() {
+            document.getElementById('launcherBottomSheet').classList.remove('show');
+        }
+
+        function selectGameMode(mode) {
+            selectedGameModeProfile = mode;
+            document.getElementById('card-balanced').classList.remove('active');
+            document.getElementById('card-competitive').classList.remove('active');
+            document.getElementById('card-' + mode).classList.add('active');
+            
+            if (typeof Android !== "undefined") { 
+                Android.setGameTweak('game_mode_profile', mode); 
+            }
+        }
+
         function calculateHeight(widthValue) {
             var heightInput = document.getElementById('input-height');
             if (!widthValue || widthValue === "") {
                 heightInput.value = "";
                 return;
             }
-            
             var width = parseInt(widthValue);
             var mode = document.getElementById('display-mode-select').value;
             let calculatedHeight;
@@ -484,7 +584,6 @@
             } else {
                 calculatedHeight = Math.round(width * (16 / 9));
             }
-            
             heightInput.value = calculatedHeight;
         }
 
@@ -503,7 +602,7 @@
             }
         }
 
-        document.addEventListener("DOMContentLoaded", function() { loadRealtimeData(); initSliderLogic(); });
+        document.addEventListener("DOMContentLoaded", function() { loadRealtimeData(); });
 
         function switchTab(tabId, element) {
             var contents = document.querySelectorAll('.tab-content');
@@ -584,10 +683,7 @@
                 alert("DPI harus antara 388 sampai 580!");
                 return;
             }
-
-            if (typeof Android !== "undefined") { 
-                Android.applyResolution(w, h, dpi); 
-            }
+            if (typeof Android !== "undefined") { Android.applyResolution(w, h, dpi); }
         }
 
         function triggerResetResolution() {
@@ -597,8 +693,8 @@
             if (typeof Android !== "undefined") { Android.resetResolution(); }
         }
 
-        /* LOGIK GERAK SLIDER OPTIMIZER RAM 2GB (REAL TIME ACTION) */
-        function initSliderLogic() {
+        // Logika Drag & Slide To Login Bulat iOS
+        document.addEventListener("DOMContentLoaded", function() {
             const handle = document.getElementById('slider-trigger');
             const container = document.getElementById('slide-lock-container');
             const progress = document.getElementById('slide-bg-progress');
@@ -606,12 +702,12 @@
             
             let isDragging = false;
             let startX = 0;
-            let maxSlide = container.clientWidth - handle.clientWidth - 4;
+            let maxSlide = container.clientWidth - handle.clientWidth - 8;
 
             function onStart(e) {
                 isDragging = true;
                 startX = (e.touches ? e.touches[0].clientX : e.clientX) - handle.offsetLeft;
-                maxSlide = container.clientWidth - handle.clientWidth - 4;
+                maxSlide = container.clientWidth - handle.clientWidth - 8;
             }
 
             function onMove(e) {
@@ -619,46 +715,35 @@
                 let clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 let left = clientX - startX;
 
-                if (left < 2) left = 2;
+                if (left < 4) left = 4;
                 if (left > maxSlide) left = maxSlide;
 
-                handle.style.transform = `translateX(${left - 2}px)`;
+                handle.style.transform = `translateX(${left - 4}px)`;
                 progress.style.width = `${left + (handle.clientWidth / 2)}px`;
 
-                // Jika digeser penuh ke kanan
-                if (left >= maxSlide - 5) {
+                if (left >= maxSlide - 4) {
                     isDragging = false;
-                    handle.style.transform = `translateX(${maxSlide - 2}px)`;
-                    handle.style.background = '#10B981'; // Berubah hijau sukses
-                    handle.innerHTML = '<span class="material-icons-round">done</span>';
-                    labelText.innerText = "OPTIMASI SELESAI! SILAKAN LOGIN";
+                    handle.style.transform = `translateX(${maxSlide - 4}px)`;
+                    labelText.innerText = "LAUNCHING GAME...";
                     labelText.style.color = "#10B981";
-                    
-                    // Eksekusi fungsi pengoptimal riil di background Android Sketchware Anda
-                    var selectedMode = document.getElementById('perf-mode-select').value;
-                    if (typeof Android !== "undefined") {
-                        // Memanggil perintah tweak performa sistem Android Anda
-                        Android.setGameTweak('ram_boost_2gb', true);
-                        Android.setGameTweak('max_performance', true);
-                        Android.setGameTweak('fps_boost', (selectedMode === 'gempal'));
-                    }
 
-                    // Aktifkan tombol peluncur Free Fire (Buka Kunci)
-                    document.getElementById('btn-ff-normal').classList.remove('disabled');
-                    document.getElementById('btn-ff-normal').classList.add('ready');
-                    document.getElementById('btn-ff-max').classList.remove('disabled');
-                    document.getElementById('btn-ff-max').classList.add('ready');
+                    if (typeof Android !== "undefined") { 
+                        Android.runGame(currentPackage); 
+                    }
                     
-                    // Matikan fungsi geser agar tidak bisa digeser-geser lagi setelah sukses
-                    handle.removeEventListener('mousedown', onStart);
-                    handle.removeEventListener('touchstart', onStart);
+                    setTimeout(() => {
+                        closeGameLauncher();
+                        handle.style.transform = 'translateX(0px)';
+                        progress.style.width = '0px';
+                        labelText.innerText = "SLIDE TO LOGIN";
+                        labelText.style.color = "#61758F";
+                    }, 1500);
                 }
             }
 
             function onEnd() {
                 if (!isDragging) return;
                 isDragging = false;
-                // Kembali ke posisi awal jika tidak digeser sampai penuh
                 handle.style.transform = 'translateX(0px)';
                 progress.style.width = '0px';
             }
@@ -666,10 +751,10 @@
             handle.addEventListener('mousedown', onStart);
             handle.addEventListener('touchstart', onStart);
             window.addEventListener('mousemove', onMove);
-            window.addEventListener('touchmove', onMove, { passive: false });
+            window.addEventListener('touchmove', onMove);
             window.addEventListener('mouseup', onEnd);
             window.addEventListener('touchend', onEnd);
-        }
+        });
     </script>
 </body>
 </html>

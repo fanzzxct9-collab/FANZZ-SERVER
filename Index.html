@@ -27,15 +27,8 @@
             user-select: none;
         }
 
-        html {
-            background-color: var(--bg-primary);
-        }
-
         html, body {
             background-color: var(--bg-primary) !important;
-        }
-
-        body {
             color: var(--text-main);
             margin: 0;
             padding: 10px 10px 85px 10px;
@@ -120,6 +113,7 @@
         .tweak-text h3 { margin: 0; font-size: 13px; font-weight: 700; }
         .tweak-text p { margin: 3px 0 0 0; font-size: 10.5px; color: var(--text-muted); line-height: 1.35; }
 
+        /* PERBAIKAN UTAMA: CSS VIP LOCK UNTUK KARTU TWEAK */
         .tweak-card.vip-locked {
             opacity: 0.5;
         }
@@ -140,6 +134,10 @@
             background: var(--bg-card); border-radius: 14px; padding: 10px;
             margin-top: -5px; margin-bottom: 10px; display: none;
             animation: slideDown 0.2s ease-in-out;
+        }
+        .recommendation-panel.vip-locked {
+            opacity: 0.4;
+            pointer-events: none !important;
         }
         @keyframes slideDown {
             from { opacity: 0; transform: translateY(-6px); }
@@ -171,12 +169,13 @@
             text-transform: uppercase; margin: 16px 0 12px 2px; color: #FFFFFF;
         }
         .setting-section-title:first-child { margin-top: 0; }
-        .config-group { background: var(--bg-card); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
         
+        .config-group { background: var(--bg-card); border-radius: 14px; padding: 14px; margin-bottom: 12px; position: relative;}
+        
+        /* FIX LOCK UNTUK SETTING RESOLUSI */
         .config-group.vip-locked {
             opacity: 0.5;
-            pointer-events: none;
-            position: relative;
+            pointer-events: none !important;
         }
         .config-group.vip-locked::after {
             content: "lock";
@@ -380,7 +379,7 @@
             </div>
         </div>
 
-        <div class="tweak-card" style="margin-bottom: 8px;">
+        <div class="tweak-card vip-lockable" style="margin-bottom: 8px;">
             <div class="tweak-left">
                 <div class="tweak-icon-box"><span class="material-icons-round">star_outline</span></div>
                 <div class="tweak-text">
@@ -596,7 +595,7 @@
         let isForceUpdateMode = false;
         let isUserVIP = false; 
         let isUserAdminBypass = false; 
-        let minDpiLimitFirebase = 450; // BERHASIL DITAMBAHKAN: variabel penampung min_dpi
+        let minDpiLimitFirebase = 450; 
         let maxDpiLimitFirebase = 980;  
         let currentMenuVersionMode = "VIP"; 
 
@@ -667,10 +666,12 @@
             applyMenuLockUI(currentMenuVersionMode === "VIP");
         }
 
+        /* PERBAIKAN: Fungsi pengunci UI ditingkatkan agar Sensi panel juga ikut terkunci mati */
         function applyMenuLockUI(shouldLock) {
             const lockableCards = document.querySelectorAll('.vip-lockable');
             const sheetGrid = document.getElementById('sheet-mode-grid');
             const settingPanel = document.getElementById('setting-config-panel');
+            const sensiPanel = document.getElementById('panel-sensi');
 
             lockableCards.forEach(card => {
                 const checkbox = card.querySelector('input[type="checkbox"]');
@@ -686,10 +687,36 @@
             if(shouldLock) {
                 if(sheetGrid) sheetGrid.style.pointerEvents = "none";
                 if(settingPanel) settingPanel.classList.add('vip-locked');
+                if(sensiPanel) {
+                    sensiPanel.classList.add('vip-locked');
+                    sensiPanel.style.display = 'none'; // Sembunyikan panel jika terkunci
+                }
+                document.getElementById('switch-sensi').checked = false;
             } else {
                 if(sheetGrid) sheetGrid.style.pointerEvents = "auto";
                 if(settingPanel) settingPanel.classList.remove('vip-locked');
+                if(sensiPanel) sensiPanel.classList.remove('vip-locked');
             }
+        }
+
+        /* PERBAIKAN: Validasi proteksi langsung di fungsi aksi klik */
+        function toggleSensiPanel(isChecked) {
+            if(!isUserVIP && currentMenuVersionMode === "VIP") {
+                showDialog("error", "Akses Terkunci", "Fitur ini khusus untuk pengguna VIP aktif!");
+                document.getElementById('switch-sensi').checked = false;
+                return;
+            }
+            var panel = document.getElementById('panel-sensi');
+            localStorage.setItem('sensi_panel_visible', isChecked);
+            logTweakToFirebase('sensi_panel_visible', isChecked);
+            if(isChecked) {
+                panel.style.display = 'block';
+                let cachedSensi = localStorage.getItem('saved_sensi_data');
+                if(cachedSensi) {
+                    let s = JSON.parse(cachedSensi);
+                    displaySensiUI(s.s1, s.s2, s.s3, s.s4, s.s5, s.s6);
+                }
+            } else { panel.style.display = 'none'; resetSensiValues(); }
         }
 
         function handleTweakChange(key, checked) {
@@ -716,7 +743,6 @@
             database.ref('app_config').on('value', (snapshot) => {
                 if(snapshot.exists()) {
                     const data = snapshot.val();
-                    // BERHASIL DIPERBAIKI: Mengambil min_dpi dan max_dpi sekaligus dari Firebase secara realtime
                     minDpiLimitFirebase = data.min_dpi || 450;
                     maxDpiLimitFirebase = data.max_dpi || 980;
                     currentMenuVersionMode = data.menu_version || "VIP";
@@ -775,7 +801,7 @@
                     document.getElementById('txt-update').innerText = "Update Tersedia";
                     document.getElementById('txt-update').style.color = "var(--accent-red)";
                     isForceUpdateMode = true;
-                    showDialog("update", "Pembaruan Tersedia", "Versi baru " + data.version + " telah dirilis.");
+                    showDialog("update", "Pembaluan Tersedia", "Versi baru " + data.version + " telah dirilis.");
                 }
             });
 
@@ -786,9 +812,7 @@
 
         function refreshTabVisibility() {
             if (isMaintenanceMode || isForceUpdateMode) return;
-            
             const targetVersionPath = currentMenuVersionMode.toLowerCase(); 
-            
             database.ref('visibility_control/' + targetVersionPath).once('value', (snapshot) => {
                 if (snapshot.exists()) {
                     const data = snapshot.val();
@@ -900,11 +924,14 @@
         });
 
         function triggerApplyResolution() {
+            if(!isUserVIP && currentMenuVersionMode === "VIP") {
+                showDialog("error", "Akses Terkunci", "Fitur ini khusus untuk pengguna VIP!");
+                return;
+            }
             var w = document.getElementById('input-width').value;
             var h = document.getElementById('input-height').value;
             var dpi = document.getElementById('input-dpi').value;
             
-            // BERHASIL DIPERBAIKI: Validasi tombol apply sekarang dinamis menggunakan min dan max dari Firebase
             if (dpi && (parseInt(dpi) < parseInt(minDpiLimitFirebase) || parseInt(dpi) > parseInt(maxDpiLimitFirebase))) { 
                 showDialog("error", "Kesalahan DPI", "Ambang batas aman saat ini " + minDpiLimitFirebase + " - " + maxDpiLimitFirebase + "!"); 
                 return; 
@@ -916,6 +943,10 @@
         }
 
         function triggerResetResolution() {
+            if(!isUserVIP && currentMenuVersionMode === "VIP") {
+                showDialog("error", "Akses Terkunci", "Fitur ini khusus untuk pengguna VIP!");
+                return;
+            }
             document.getElementById('input-width').value = ""; document.getElementById('input-height').value = ""; document.getElementById('input-dpi').value = "";
             localStorage.removeItem('res_w'); localStorage.removeItem('res_h'); localStorage.removeItem('res_dpi');
             if (typeof Android !== "undefined") { Android.resetResolution(); }
@@ -932,20 +963,6 @@
             }
         }
 
-        function toggleSensiPanel(isChecked) {
-            var panel = document.getElementById('panel-sensi');
-            localStorage.setItem('sensi_panel_visible', isChecked);
-            logTweakToFirebase('sensi_panel_visible', isChecked);
-            if(isChecked) {
-                panel.style.display = 'block';
-                let cachedSensi = localStorage.getItem('saved_sensi_data');
-                if(cachedSensi) {
-                    let s = JSON.parse(cachedSensi);
-                    displaySensiUI(s.s1, s.s2, s.s3, s.s4, s.s5, s.s6);
-                }
-            } else { panel.style.display = 'none'; resetSensiValues(); }
-        }
-
         function resetSensiValues() {
             document.querySelectorAll('.sensi-value').forEach(el => el.innerText = "0");
             localStorage.removeItem('saved_sensi_data');
@@ -958,6 +975,7 @@
         }
 
         function generateSensiData() {
+            if(!isUserVIP && currentMenuVersionMode === "VIP") return;
             var mode = document.getElementById('sensi-preset-mode').value;
             let s1, s2, s3, s4, s5, s6;
             if (mode === "low") { s1 = Math.floor(Math.random() * 11) + 75; s2 = Math.floor(Math.random() * 11) + 70; s3 = Math.floor(Math.random() * 11) + 68; s4 = Math.floor(Math.random() * 11) + 65; s5 = Math.floor(Math.random() * 11) + 35; s6 = Math.floor(Math.random() * 11) + 45; } 

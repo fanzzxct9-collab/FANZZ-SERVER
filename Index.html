@@ -69,7 +69,6 @@
         .status-timer { color: #4B5E78; font-size: 10.5px; margin-top: 10px; font-family: monospace; }
         .logo-hacker { position: absolute; right: 14px; top: 14px; width: 38px; height: 38px; opacity: 0.75; }
 
-        /* Update & Server Status Style */
         .server-status-box {
             display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;
         }
@@ -111,6 +110,7 @@
         .social-icon-img { width: 22px; height: 22px; object-fit: contain; }
 
         .tweak-card {
+            position: relative;
             background: var(--bg-card); border-radius: 14px; padding: 10px 12px;
             display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px;
         }
@@ -119,6 +119,23 @@
         .tweak-icon-box span { font-size: 20px; }
         .tweak-text h3 { margin: 0; font-size: 13px; font-weight: 700; }
         .tweak-text p { margin: 3px 0 0 0; font-size: 10.5px; color: var(--text-muted); line-height: 1.35; }
+
+        /* VIP Lock UI State style */
+        .tweak-card.vip-locked {
+            opacity: 0.5;
+        }
+        .tweak-card.vip-locked .switch {
+            pointer-events: none;
+        }
+        .tweak-card.vip-locked::after {
+            content: "lock";
+            font-family: 'Material Icons Round';
+            position: absolute;
+            right: 50px;
+            top: 12px;
+            color: var(--accent-red);
+            font-size: 16px;
+        }
 
         .recommendation-panel {
             background: var(--bg-card); border-radius: 14px; padding: 10px;
@@ -156,6 +173,13 @@
         }
         .setting-section-title:first-child { margin-top: 0; }
         .config-group { background: var(--bg-card); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+        
+        /* Locked config panel */
+        .config-group.vip-locked {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
         .config-label { font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
         
         .dropdown-container { position: relative; margin-bottom: 14px; }
@@ -217,10 +241,9 @@
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 8px; font-weight: 700; cursor: pointer; flex: 1; }
         .nav-item span { margin-bottom: 2px; font-size: 16px; }
         .nav-item.active { color: #0088FF; }
-        
         .nav-item.hidden { display: none !important; }
 
-        /* ==================== STYLING DIALOG / ALERT DIALOG MODERN ==================== */
+        /* MODERN DIALOG BOX */
         .dialog-backdrop {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
@@ -243,101 +266,39 @@
             border-radius: 10px; padding: 11px; font-size: 12px; font-weight: 800; cursor: pointer;
         }
         .dialog-btn:active { opacity: 0.8; }
+        .dialog-backdrop.locked { pointer-events: none; }
+        .dialog-backdrop.locked .dialog-btn { display: none; }
+        .dialog-backdrop.force-lock { pointer-events: auto !important; }
 
-        .dialog-backdrop.locked {
-            pointer-events: none;
-        }
-        .dialog-backdrop.locked .dialog-btn {
-            display: none;
-        }
-
-        /* Untuk memaksa pointer-events kembali aktif pada kotak dialog di dalam backdrop yang di-lock */
-        .dialog-backdrop.force-lock {
-            pointer-events: auto !important;
-        }
-
-        /* ==================== STYLING ANIMASI IOS BOTTOM SHEET ==================== */
+        /* IOS BOTTOM SHEET */
         .ios-backdrop {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            z-index: 9999;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+            z-index: 9999; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
         }
-        .ios-backdrop.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
+        .ios-backdrop.show { opacity: 1; visibility: visible; }
         .launcher-box-sheet {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: #141D29;
-            border-radius: 24px 24px 0 0;
-            padding: 10px 20px 32px 20px;
-            z-index: 10000;
-            box-shadow: 0 -8px 32px rgba(0,0,0,0.4);
-            transform: translateY(100%);
+            position: fixed; bottom: 0; left: 0; right: 0; background: #141D29;
+            border-radius: 24px 24px 0 0; padding: 10px 20px 32px 20px; z-index: 10000;
+            box-shadow: 0 -8px 32px rgba(0,0,0,0.4); transform: translateY(100%);
             transition: transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.12);
         }
-        .ios-backdrop.show .launcher-box-sheet {
-            transform: translateY(0);
-        }
+        .ios-backdrop.show .launcher-box-sheet { transform: translateY(0); }
+        .ios-drag-handle { width: 40px; height: 5px; background: #314257; border-radius: 3px; margin: 0 auto 18px auto; cursor: pointer; }
 
-        .ios-drag-handle {
-            width: 40px;
-            height: 5px;
-            background: #314257;
-            border-radius: 3px;
-            margin: 0 auto 18px auto;
-            cursor: pointer;
-        }
-
-        .game-header-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 20px;
-        }
-        .game-title-left h3 {
-            margin: 0; font-size: 16px; font-weight: 700; color: #FFFFFF; letter-spacing: 0.3px;
-        }
-        .game-title-left p {
-            margin: 4px 0 0 0; font-size: 11.5px; color: #5C6E84; font-weight: 500;
-        }
+        .game-header-info { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .game-title-left h3 { margin: 0; font-size: 16px; font-weight: 700; color: #FFFFFF; letter-spacing: 0.3px; }
+        .game-title-left p { margin: 4px 0 0 0; font-size: 11.5px; color: #5C6E84; font-weight: 500; }
         .game-version-right { text-align: right; }
         .game-version-right .v-num { font-size: 13px; font-weight: 700; color: #2D74DA; }
         .game-version-right .v-code { margin: 4px 0 0 0; font-size: 11.5px; color: #5C6E84; font-weight: 500; }
 
-        .mode-selection-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-        .mode-card {
-            background: transparent;
-            border: 1px solid #28374A;
-            border-radius: 20px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .mode-card.active {
-            background: #1A62B1;
-            border-color: #1A62B1;
-        }
-        .mode-card-title {
-            display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 14px; font-weight: 700; color: #FFFFFF;
-        }
+        .mode-selection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        .mode-card { background: transparent; border: 1px solid #28374A; border-radius: 20px; padding: 15px; cursor: pointer; transition: all 0.2s ease; }
+        .mode-card.active { background: #1A62B1; border-color: #1A62B1; }
+        .mode-card-title { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 14px; font-weight: 700; color: #FFFFFF; }
         .mode-card-title span { font-size: 18px; }
-        .mode-card-desc {
-            margin: 0; font-size: 11px; line-height: 1.5; color: #8CA0BA; font-weight: 500;
-        }
+        .mode-card-desc { margin: 0; font-size: 11px; line-height: 1.5; color: #8CA0BA; font-weight: 500; }
         .mode-card.active .mode-card-desc { color: #DFE8F5; }
 
         .slide-action-container {
@@ -351,7 +312,6 @@
             box-shadow: 0 2px 8px rgba(26,131,255,0.4);
         }
         .slide-action-btn span { color: white; font-size: 20px; font-weight: bold; }
-        .slide-action-btn:active { cursor: grabbing; }
         .slide-fill-progress { position: absolute; left: 0; top: 0; height: 100%; width: 0; background: rgba(26, 131, 255, 0.15); z-index: 0; }
     </style>
 </head>
@@ -359,9 +319,9 @@
 
     <div id="home" class="tab-content active">
         <div class="status-container">
-            <h2 class="status-title">Berjalan <span class="badge-tools">Tools</span></h2>
+            <h2 class="status-title">Berjalan <span class="badge-tools">Tools</span> <span id="badge-vip" style="background:var(--accent-red); margin-left:6px;" class="badge-tools">NON-VIP</span></h2>
             <p class="status-version">Versi: 3.1.0 | Beta</p>
-            <div class="status-timer">T+167 : 34 : 05</div>
+            <div class="status-timer" id="txt-vip-expired">Status Lisensi: Memuat data...</div>
             <svg class="logo-hacker" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 20L50 55L90 20L75 85L50 65L25 85L10 20Z" fill="white"/></svg>
         </div>
 
@@ -405,11 +365,11 @@
     <div id="tools" class="tab-content">
         <div class="game-launcher-grid">
             <div class="game-card-btn" onclick="openGameLauncher('ff')">
-                <img class="game-icon-img" src="https://fanzzxct9-collab.github.io/FANZZ-SERVER/ff_icon.png" onerror="this.src='https://img.icons8.com/color/96/free-fire.png'" alt="FF">
+                <img class="game-icon-img" src="https://fanzzxct9-collab.github.io/FANZZ-SERVER/ff_icon.png" onerror="this.src='https://i.ibb.co/bgsYz8JQ/ic-ff.png'" alt="FF">
                 <div class="game-meta"><h3>Free Fire</h3><p>com.dts.freefireth</p></div>
             </div>
             <div class="game-card-btn" onclick="openGameLauncher('ffmax')">
-                <img class="game-icon-img" src="https://fanzzxct9-collab.github.io/FANZZ-SERVER/ffmax_icon.png" onerror="this.src='https://img.icons8.com/color/96/free-fire.png'" alt="FF MAX">
+                <img class="game-icon-img" src="https://fanzzxct9-collab.github.io/FANZZ-SERVER/ffmax_icon.png" onerror="this.src='https://i.ibb.co/PsFr4gsB/ic-ffmax.png'" alt="FF MAX">
                 <div class="game-meta"><h3>Free Fire MAX</h3><p>com.dts.freefiremax</p></div>
             </div>
         </div>
@@ -449,69 +409,69 @@
             <div class="sensi-row-item"><span class="sensi-name">Tombol Kamera Bebas</span><span class="sensi-value" id="val-kamera">0</span></div>
         </div>
 
-        <div class="tweak-card">
+        <div class="tweak-card vip-lockable">
             <div class="tweak-left">
                 <div class="tweak-icon-box"><span class="material-icons-round">ads_click</span></div>
                 <div class="tweak-text"><h3>Easy Drag</h3><p>Mempermudah pergerakan drag agar lebih ringan dan mudah dikontrol sehingga transisi aim terasa lebih halus</p></div>
             </div>
-            <div class="tweak-right-action"><label class="switch"><input type="checkbox" id="tweak_easy_drag" onchange="Android.setGameTweak('easy_drag', this.checked)"><span class="slider"></span></label></div>
+            <div class="tweak-right-action"><label class="switch"><input type="checkbox" id="tweak_easy_drag" onchange="handleTweakChange('easy_drag', this.checked)"><span class="slider"></span></label></div>
         </div>
-        <div class="tweak-card">
+        <div class="tweak-card vip-lockable">
             <div class="tweak-left">
                 <div class="tweak-icon-box"><span class="material-icons-round">track_changes</span></div>
                 <div class="tweak-text"><h3>Drag hs</h3><p>Membantu arah pergerakan drag lebih terarah ke area target untuk mempermudah mendapatkan headshot secara konsisten</p></div>
             </div>
-            <div class="tweak-right-action"><label class="switch"><input type="checkbox" id="tweak_drag_hs" onchange="Android.setGameTweak('drag_hs', this.checked)"><span class="slider"></span></label></div>
+            <div class="tweak-right-action"><label class="switch"><input type="checkbox" id="tweak_drag_hs" onchange="handleTweakChange('drag_hs', this.checked)"><span class="slider"></span></label></div>
         </div>
-        <div class="tweak-card">
+        <div class="tweak-card vip-lockable">
             <div class="tweak-left">
                 <div class="tweak-icon-box"><span class="material-icons-round">bolt</span></div>
                 <div class="tweak-text"><h3>Fps Boost</h3><p>Meningkatkan kestabilan frame rate agar tampilan lebih lancar dan responsif saat digunakan (tidak semua divice support)</p></div>
             </div>
-            <div class="tweak-right-action"><label class="switch"><input type="checkbox" id="tweak_fps_boost" onchange="Android.setGameTweak('fps_boost', this.checked)"><span class="slider"></span></label></div>
+            <div class="tweak-right-action"><label class="switch"><input type="checkbox" id="tweak_fps_boost" onchange="handleTweakChange('fps_boost', this.checked)"><span class="slider"></span></label></div>
         </div>
-        <div class="tweak-card">
+        <div class="tweak-card vip-lockable">
             <div class="tweak-left">
                 <div class="tweak-icon-box"><span class="material-icons-round">tune</span></div>
                 <div class="tweak-text"><h3>Sensitivity tuning</h3><p>Menyesuaikan tingkat sensitivitas agar pergerakan aim lebih stabil halus dan sesuai dengan karakter penggunaan (tidak semua divice support)</p></div>
             </div>
-            <div class="tweak-right-action"><label class="switch"><input type="checkbox" id="tweak_sensitivity_tuning" onchange="Android.setGameTweak('sensitivity_tuning', this.checked)"><span class="slider"></span></label></div>
+            <div class="tweak-right-action"><label class="switch"><input type="checkbox" id="tweak_sensitivity_tuning" onchange="handleTweakChange('sensitivity_tuning', this.checked)"><span class="slider"></span></label></div>
         </div>
-        <div class="tweak-card">
+        <div class="tweak-card vip-lockable">
             <div class="tweak-left">
                 <div class="tweak-icon-box"><span class="material-icons-round">speed</span></div>
                 <div class="tweak-text"><h3>Max performance</h3><p>Mengoptimalkan performa perangkat agar berjalan lebih stabil dan responsif saat digunakan (tidak semua divice support)</p></div>
             </div>
-            <div class="tweak-right-action"><label class="switch"><input type="checkbox" id="tweak_max_performance" onchange="Android.setGameTweak('max_performance', this.checked)"><span class="slider"></span></label></div>
+            <div class="tweak-right-action"><label class="switch"><input type="checkbox" id="tweak_max_performance" onchange="handleTweakChange('max_performance', this.checked)"><span class="slider"></span></label></div>
         </div>
 
         <div style="margin-top: 18px;" class="setting-section-title">Global Feature Optimizer</div>
-        <div class="tweak-card">
+        <div class="tweak-card vip-lockable">
             <div class="tweak-left">
                 <div class="tweak-icon-box"><span class="material-icons-round">ads_click</span></div>
                 <div class="tweak-text"><h3>Pointer Sensitivity</h3><p>Mengaktifkan akselerasi pointer presisi tinggi langsung pada perangkat sistem kernel</p></div>
             </div>
-            <div class="tweak-right-action"><label class="switch"><input type="checkbox" id="feat_sensitivity" onchange="Android.setFeature('sensitivity', this.checked)"><span class="slider"></span></label></div>
+            <div class="tweak-right-action"><label class="switch"><input type="checkbox" id="feat_sensitivity" onchange="handleFeatureChange('sensitivity', this.checked)"><span class="slider"></span></label></div>
         </div>
-        <div class="tweak-card">
+        <div class="tweak-card vip-lockable">
             <div class="tweak-left">
                 <div class="tweak-icon-box"><span class="material-icons-round">hardware</span></div>
                 <div class="tweak-text"><h3>Hardware Rendering</h3><p>Memaksa subsistem grafis (EGL dan SurfaceFlinger) menggunakan GPU penuh</p></div>
             </div>
-            <div class="tweak-right-action"><label class="switch"><input type="checkbox" id="feat_performance" onchange="Android.setFeature('performance', this.checked)"><span class="slider"></span></label></div>
+            <div class="tweak-right-action"><label class="switch"><input type="checkbox" id="feat_performance" onchange="handleFeatureChange('performance', this.checked)"><span class="slider"></span></label></div>
         </div>
-        <div class="tweak-card">
+        <div class="tweak-card vip-lockable">
             <div class="tweak-left">
                 <div class="tweak-icon-box"><span class="material-icons-round">touch_app</span></div>
                 <div class="tweak-text"><h3>Super Touch Response</h3><p>Meminimalisir delay gesekan layar sentuh sistem Android ke titik terendah</p></div>
             </div>
-            <div class="tweak-right-action"><label class="switch"><input type="checkbox" id="feat_touch" onchange="Android.setFeature('touch', this.checked)"><span class="slider"></span></label></div>
+            <div class="tweak-right-action"><label class="switch"><input type="checkbox" id="feat_touch" onchange="handleFeatureChange('touch', this.checked)"><span class="slider"></span></label></div>
         </div>
     </div>
 
     <div id="setting" class="tab-content">
         <div class="setting-section-title">Display Configuration</div>
-        <div class="config-group">
+        <div class="config-group" id="setting-config-panel">
             <div class="config-label">Display Mode</div>
             <div class="dropdown-container">
                 <select class="dropdown-select" id="display-mode-select">
@@ -535,7 +495,7 @@
             <div class="dropdown-container" style="margin-bottom: 16px;">
                 <input type="number" class="style-input" id="input-dpi" placeholder="DPI" 
                        oninput="this.value = this.value.slice(0,3)">
-                <small style="color: #6B7A8F; font-size: 9.5px; margin-top: 4px; display: block;">Min: 388 &nbsp;&nbsp; Max: 580</small>
+                <small style="color: #6B7A8F; font-size: 9.5px; margin-top: 4px; display: block;">Min: 450 &nbsp;&nbsp; Max: 980</small>
             </div>
 
             <div class="action-button-row">
@@ -561,23 +521,11 @@
             </div>
             <span class="material-icons-round" style="font-size: 16px; color: var(--text-muted);">open_in_new</span>
         </a>
-        
-        <a href="https://www.tiktok.com/@fanzz_xt9" target="_blank" class="social-link-card">
-            <div class="social-left-info">
-                <img class="social-icon-img" src="https://img.icons8.com/color/48/tiktok.png" alt="TT">
-                <div>
-                    <h3>Follow TikTok</h3>
-                    <p>Follow tiktok agar dapat info tentang update dan seputar aplikasi free yang bakalan di upload lewat tiktok resmi</p>
-                </div>
-            </div>
-            <span class="material-icons-round" style="font-size: 16px; color: var(--text-muted);">open_in_new</span>
-        </a>
     </div>
 
     <div class="ios-backdrop" id="launcherBottomSheet" onclick="closeGameLauncher()">
         <div class="launcher-box-sheet" onclick="event.stopPropagation()">
             <div class="ios-drag-handle" onclick="closeGameLauncher()"></div>
-
             <div class="game-header-info">
                 <div class="game-title-left">
                     <h3 id="sheet-game-title">Free Fire</h3>
@@ -588,18 +536,16 @@
                     <div class="v-code" id="sheet-game-code">2019120270</div>
                 </div>
             </div>
-
-            <div class="mode-selection-grid">
+            <div class="mode-selection-grid" id="sheet-mode-grid">
                 <div class="mode-card active" id="card-balanced" onclick="selectGameMode('balanced')">
                     <div class="mode-card-title"><span class="material-icons-round">scale</span> Balanced</div>
-                    <p class="mode-card-desc">Mode seimbang untuk gameplay stabil dan nyaman, cocok untuk bermain harian dengan performa yang konsisten.</p>
+                    <p class="mode-card-desc">Mode seimbang untuk gameplay stabil dan nyaman.</p>
                 </div>
                 <div class="mode-card" id="card-competitive" onclick="selectGameMode('competitive')">
                     <div class="mode-card-title"><span class="material-icons-round">rocket_launch</span> Competitive</div>
-                    <p class="mode-card-desc">Mode performa tinggi untuk gameplay cepat dan responsif, dirancang untuk player kompetitif dan permainan kompetitif.</p>
+                    <p class="mode-card-desc">Mode performa tinggi untuk gameplay cepat dan responsif.</p>
                 </div>
             </div>
-
             <div class="slide-action-container" id="slide-lock-container">
                 <div class="slide-fill-progress" id="slide-bg-progress"></div>
                 <div class="slide-action-text" id="slide-label-text">SLIDE TO LOGIN</div>
@@ -641,7 +587,8 @@
         let currentPackage = "com.dts.freefireth";
         let selectedGameModeProfile = 'balanced';
         let isMaintenanceMode = false;
-        let isForceUpdateMode = false; // Flag baru khusus untuk memantau status update wajib
+        let isForceUpdateMode = false;
+        let isUserVIP = false; // Flag status VIP local
 
         const launcherDataMap = {
             ff: { title: "Free Fire", package: "com.dts.freefireth", version: "1.123.1", code: "2019120270" },
@@ -650,10 +597,103 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             document.body.style.opacity = '1';
+            loadRealtimeData();
+            checkVipStatusLive(); 
             listenFirebaseData();
         });
 
-        // 🟢 REALTIME LIVE DATABASE FIREBASE
+        // 🟢 LIVE VALIDASI VIP BERDASARKAN DEVICE NAME ANDROID
+        function checkVipStatusLive() {
+            let deviceName = "Unknown Device";
+            if (typeof Android !== "undefined") {
+                deviceName = Android.getDeviceName();
+            }
+            
+            const cleanDeviceKey = deviceName.replace(/[^a-zA-Z0-9\s]/g, "");
+
+            // Dengar data VIP khusus untuk perangkat ini secara Realtime
+            database.ref('vip_devices/' + cleanDeviceKey).on('value', (snapshot) => {
+                if(snapshot.exists()) {
+                    const vipData = snapshot.val();
+                    const now = Date.now();
+
+                    if(now < vipData.expiredAt) {
+                        // JIKA VIP AKTIF
+                        isUserVIP = true;
+                        document.getElementById('badge-vip').innerText = "VIP ACTIVE";
+                        document.getElementById('badge-vip').style.background = "var(--accent-green)";
+                        
+                        const expDate = new Date(vipData.expiredAt).toLocaleString('id-ID');
+                        document.getElementById('txt-vip-expired').innerText = "VIP Berlaku Sampai: " + expDate;
+                        
+                        applyVipLockUI(false); // Buka gembok
+                    } else {
+                        // JIKA VIP SUDAH EXPIRED
+                        handleExpiredOrNonVip();
+                    }
+                } else {
+                    // JIKA PERANGKAT BELUM TERDAFTAR VIP
+                    handleExpiredOrNonVip();
+                }
+            });
+        }
+
+        function handleExpiredOrNonVip() {
+            isUserVIP = false;
+            document.getElementById('badge-vip').innerText = "NON-VIP";
+            document.getElementById('badge-vip').style.background = "var(--accent-red)";
+            document.getElementById('txt-vip-expired').innerText = "Status Lisensi: Fitur premium terkunci (Hubungi Admin)";
+            applyVipLockUI(true); // Kunci semua switch kecuali sensi recommendation
+        }
+
+        // Fungsi manipulasi CSS & attribute disabled switch berdasarkan status VIP
+        function applyVipLockUI(shouldLock) {
+            const lockableCards = document.querySelectorAll('.vip-lockable');
+            const settingPanel = document.getElementById('setting-config-panel');
+            const sheetGrid = document.getElementById('sheet-mode-grid');
+
+            lockableCards.forEach(card => {
+                const checkbox = card.querySelector('input[type="checkbox"]');
+                if(shouldLock) {
+                    card.classList.add('vip-locked');
+                    if(checkbox) { checkbox.checked = false; checkbox.disabled = true; }
+                } else {
+                    card.classList.remove('vip-locked');
+                    if(checkbox) { checkbox.disabled = false; }
+                }
+            });
+
+            if(shouldLock) {
+                if(settingPanel) settingPanel.classList.add('vip-locked');
+                if(sheetGrid) sheetGrid.style.pointerEvents = "none";
+            } else {
+                if(settingPanel) settingPanel.classList.remove('vip-locked');
+                if(sheetGrid) sheetGrid.style.pointerEvents = "auto";
+            }
+        }
+
+        // Interseptor pencegah manipulasi fungsi jika non VIP mencoba memaksa memicu switch
+        function handleTweakChange(key, checked) {
+            if(!isUserVIP) {
+                showDialog("error", "Akses Terkunci", "Fitur ini khusus untuk pengguna VIP aktif!");
+                document.getElementById('tweak_' + key).checked = false;
+                return;
+            }
+            if (typeof Android !== "undefined") { Android.setGameTweak(key, checked); }
+            logTweakToFirebase(key, checked);
+        }
+
+        function handleFeatureChange(key, checked) {
+            if(!isUserVIP) {
+                showDialog("error", "Akses Terkunci", "Fitur ini khusus untuk pengguna VIP aktif!");
+                document.getElementById('feat_' + key).checked = false;
+                return;
+            }
+            if (typeof Android !== "undefined") { Android.setFeature(key, checked); }
+            logTweakToFirebase(key, checked);
+        }
+
+        // 🟢 REALTIME LIVE DATABASE CONTROL SERVER
         function listenFirebaseData() {
             database.ref('server_status').on('value', (snapshot) => {
                 const data = snapshot.val();
@@ -663,35 +703,26 @@
                     
                     if (statusText === "Online") {
                         document.getElementById('txt-server').style.color = "var(--accent-green)";
-                        
                         if(isMaintenanceMode) {
                             isMaintenanceMode = false;
                             document.getElementById('customDialog').classList.remove('locked');
                             closeDialog();
                         }
-                        
-                        // Kembalikan semua tab ke normal jika status server Online kembali
                         if (!isForceUpdateMode) {
                             toggleMenuTab('tools', true);
                             toggleMenuTab('setting', true);
                             toggleMenuTab('profil', true);
                         }
-                        
                     } else if (statusText === "Maintenance") {
                         document.getElementById('txt-server').style.color = "var(--accent-red)";
                         isMaintenanceMode = true;
                         showMaintenanceDialog();
                     } else if (statusText === "Server Sibuk") {
                         document.getElementById('txt-server').style.color = "var(--accent-red)";
-                        
-                        // FIX PERMINTAAN: Otomatis sembunyikan TOOLS, SETTING, dan PROFIL sekaligus
                         toggleMenuTab('tools', false);
                         toggleMenuTab('setting', false);
                         toggleMenuTab('profil', false);
-                        
-                        showDialog("info", "Server Sibuk", "Layanan sedang sibuk. Beberapa fitur dinonaktifkan sementara oleh sistem, mohon tunggu.");
-                    } else {
-                        document.getElementById('txt-server').style.color = "var(--accent-red)";
+                        showDialog("info", "Server Sibuk", "Layanan sedang sibuk. Beberapa fitur dinonaktifkan sementara.");
                     }
                 }
             });
@@ -701,15 +732,13 @@
                 if(data && data.version !== "3.1.0" && !isMaintenanceMode) {
                     document.getElementById('txt-update').innerText = "Update Tersedia";
                     document.getElementById('txt-update').style.color = "var(--accent-red)";
-                    isForceUpdateMode = true; // Kunci sistem ke mode wajib update
-                    showDialog("update", "Pembaruan Tersedia", "Versi baru " + data.version + " telah dirilis. Silakan lakukan pembaruan sistem!");
+                    isForceUpdateMode = true;
+                    showDialog("update", "Pembaruan Tersedia", "Versi baru " + data.version + " telah dirilis.");
                 }
             });
 
             database.ref('visibility_control').on('value', (snapshot) => {
-                // Diabaikan jika server sedang sibuk/maintenance/update agar tidak bentrok
                 if (isMaintenanceMode || isForceUpdateMode) return;
-                
                 const data = snapshot.val();
                 if (data) {
                     if (data.tools !== undefined) toggleMenuTab('tools', data.tools);
@@ -719,159 +748,121 @@
         }
 
         function logTweakToFirebase(key, value) {
-            database.ref('user_tweaks/' + (navigator.userAgent.replace(/[^a-zA-Z0-9]/g, "")) ).update({
+            let deviceName = "UnknownDevice";
+            if(typeof Android !== "undefined") deviceName = Android.getDeviceName();
+            const cleanKey = deviceName.replace(/[^a-zA-Z0-9]/g, "");
+            database.ref('user_tweaks/' + cleanKey).update({
                 [key]: value,
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
         }
 
-        // 🟢 LOCK SCREEN UTK MAINTENANCE
         function showMaintenanceDialog() {
             const dialog = document.getElementById('customDialog');
             document.getElementById('dialogIcon').innerText = "build";
             document.getElementById('dialogIcon').style.color = "var(--accent-red)";
             document.getElementById('dialogTitle').innerText = "Server Maintenance";
-            document.getElementById('dialogMsg').innerText = "Aplikasi sedang dalam perbaikan berkala untuk meningkatkan performa. Anda tidak dapat mengakses fitur apa pun saat ini.";
-            
-            const btn = document.getElementById('dialogBtn');
-            btn.innerText = "OK";
-            btn.style.background = "var(--accent-blue)";
-            btn.onclick = closeDialog;
-
+            document.getElementById('dialogMsg').innerText = "Aplikasi sedang dalam perbaikan berkala.";
             dialog.className = "dialog-backdrop show locked";
             switchTab('home', document.getElementById('nav-home'));
         }
 
-        // 🟢 DIALOG BOX NORMAL
         function showDialog(iconType, title, message) {
-            if (isMaintenanceMode) return; 
-            
+            if (isMaintenanceMode) return;
             const icons = { info: "info", success: "check_circle", error: "error", update: "system_update_alt" };
-            const colors = { info: "#0088FF", success: "#10B981", error: "#EF4444", update: "#10B981" };
-            
             document.getElementById('dialogIcon').innerText = icons[iconType] || "info";
-            document.getElementById('dialogIcon').style.color = colors[iconType] || "#0088FF";
             document.getElementById('dialogTitle').innerText = title;
             document.getElementById('dialogMsg').innerText = message;
-            
-            const btn = document.getElementById('dialogBtn');
             const dialog = document.getElementById('customDialog');
-            
-            // FIX PERMINTAAN: LOGIKA DIALOG UPDATE KUNCI TOTAL (KLIK LUAR TIDAK AKAN HILANG)
+            const btn = document.getElementById('dialogBtn');
+
             if (iconType === "update") {
                 btn.innerText = "WhatsApp";
-                btn.style.background = "#10B981"; 
-                btn.onclick = function() {
-                    window.open("https://whatsapp.com/channel/0029VajWnZ6E50UfByAasT3G", "_blank");
-                };
-                
-                // Berikan class 'force-lock' agar area luar tidak merespon klik close
+                btn.onclick = function() { window.open("https://whatsapp.com/channel/0029VajWnZ6E50UfByAasT3G", "_blank"); };
                 dialog.className = "dialog-backdrop show force-lock";
-                switchTab('home', document.getElementById('nav-home'));
             } else {
-                btn.innerText = "OK";
-                btn.style.background = "var(--accent-blue)";
-                btn.onclick = closeDialog;
-                
+                btn.innerText = "OK"; btn.onclick = closeDialog;
                 dialog.className = "dialog-backdrop show";
-                
-                // Jika server sibuk atau normal, pasang event listener standar klik luar untuk menutup selain update
-                dialog.onclick = function() {
-                    closeDialog();
-                };
             }
         }
 
         function closeDialog() {
-            // Jika dalam kondisi maintenance atau force update wajib, cegah menutup dialog dengan cara apa pun
-            if (isMaintenanceMode || isForceUpdateMode) return; 
+            if (isMaintenanceMode || isForceUpdateMode) return;
             document.getElementById('customDialog').classList.remove('show');
         }
 
-        // 🟢 TAB CONTROLLER (PEMBERSIH JEDA TAB)
         function toggleMenuTab(tabKey, isVisible) {
             const navElement = document.getElementById('nav-' + tabKey);
             if (!navElement) return;
-            
-            if (isVisible) {
-                navElement.classList.remove('hidden');
-            } else {
+            if (isVisible) { navElement.classList.remove('hidden'); } 
+            else {
                 navElement.classList.add('hidden');
-                if(document.getElementById(tabKey).classList.contains('active')) {
-                    switchTab('home', document.getElementById('nav-home'));
-                }
+                if(document.getElementById(tabKey).classList.contains('active')) { switchTab('home', document.getElementById('nav-home')); }
             }
         }
 
         function switchTab(tabId, element) {
             if (element.classList.contains('hidden')) return;
-
-            var contents = document.querySelectorAll('.tab-content');
-            contents.forEach(function(c) { c.classList.remove('active'); });
-            var navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(function(i) { i.classList.remove('active'); });
-            
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             element.classList.add('active');
-            if(tabId === 'home') { loadRealtimeData(); }
         }
 
         function openGameLauncher(gameKey) {
             if (isMaintenanceMode) return;
             const data = launcherDataMap[gameKey];
             currentPackage = data.package;
-
             document.getElementById('sheet-game-title').innerText = data.title;
             document.getElementById('sheet-game-package').innerText = data.package;
             document.getElementById('sheet-game-version').innerText = data.version;
             document.getElementById('sheet-game-code').innerText = data.code;
-
-            let savedProfile = localStorage.getItem('mode_' + currentPackage) || 'balanced';
-            selectGameMode(savedProfile);
-
+            selectGameMode(localStorage.getItem('mode_' + currentPackage) || 'balanced');
             document.getElementById('launcherBottomSheet').classList.add('show');
         }
 
-        function closeGameLauncher() {
-            document.getElementById('launcherBottomSheet').classList.remove('show');
-        }
+        function closeGameLauncher() { document.getElementById('launcherBottomSheet').classList.remove('show'); }
 
         function selectGameMode(mode) {
+            if(!isUserVIP) return; // Proteksi jika bukan VIP
             selectedGameModeProfile = mode;
             document.getElementById('card-balanced').classList.remove('active');
             document.getElementById('card-competitive').classList.remove('active');
             document.getElementById('card-' + mode).classList.add('active');
-            
             localStorage.setItem('mode_' + currentPackage, mode);
             logTweakToFirebase('game_mode_' + currentPackage, mode);
-
-            if (typeof Android !== "undefined") { 
-                Android.setGameTweak('game_mode_profile_' + currentPackage, mode === 'competitive'); 
-            }
+            if (typeof Android !== "undefined") { Android.setGameTweak('game_mode_profile_' + currentPackage, mode === 'competitive'); }
         }
 
         function calculateHeight(widthValue) {
             var heightInput = document.getElementById('input-height');
-            if (!widthValue || widthValue === "") {
-                heightInput.value = "";
-                return;
-            }
-            var width = parseInt(widthValue);
+            if (!widthValue) { heightInput.value = ""; return; }
             var mode = document.getElementById('display-mode-select').value;
-            let calculatedHeight;
-
-            if (mode === "ultrawide") {
-                calculatedHeight = Math.round(width * 2.77767857);
-            } else {
-                calculatedHeight = Math.round(width * (16 / 9));
-            }
-            heightInput.value = calculatedHeight;
+            heightInput.value = (mode === "ultrawide") ? Math.round(parseInt(widthValue) * 2.77767857) : Math.round(parseInt(widthValue) * (16 / 9));
         }
 
         document.getElementById('display-mode-select').addEventListener('change', function() {
-            var currentWidth = document.getElementById('input-width').value;
-            calculateHeight(currentWidth);
+            calculateHeight(document.getElementById('input-width').value);
         });
+
+        function triggerApplyResolution() {
+            if(!isUserVIP) { showDialog("error", "Akses Terkunci", "Fitur ini khusus VIP!"); return; }
+            var w = document.getElementById('input-width').value;
+            var h = document.getElementById('input-height').value;
+            var dpi = document.getElementById('input-dpi').value;
+            if (dpi && (parseInt(dpi) < 388 || parseInt(dpi) > 580)) { showDialog("error", "Kesalahan DPI", "Ambang batas aman 388 - 580!"); return; }
+            localStorage.setItem('res_w', w); localStorage.setItem('res_h', h); localStorage.setItem('res_dpi', dpi);
+            if (typeof Android !== "undefined") { Android.applyResolution(w, h, dpi); }
+            showDialog("success", "Berhasil Diubah", "Resolusi diterapkan.");
+        }
+
+        function triggerResetResolution() {
+            if(!isUserVIP) { showDialog("error", "Akses Terkunci", "Fitur ini khusus VIP!"); return; }
+            document.getElementById('input-width').value = ""; document.getElementById('input-height').value = ""; document.getElementById('input-dpi').value = "";
+            localStorage.removeItem('res_w'); localStorage.removeItem('res_h'); localStorage.removeItem('res_dpi');
+            if (typeof Android !== "undefined") { Android.resetResolution(); }
+            showDialog("info", "Reset Resolusi", "Resolusi dikembalikan ke default.");
+        }
 
         function loadRealtimeData() {
             if (typeof Android !== "undefined") {
@@ -894,154 +885,67 @@
                     let s = JSON.parse(cachedSensi);
                     displaySensiUI(s.s1, s.s2, s.s3, s.s4, s.s5, s.s6);
                 }
-            } else {
-                panel.style.display = 'none';
-                resetSensiValues();
-            }
+            } else { panel.style.display = 'none'; resetSensiValues(); }
         }
 
         function resetSensiValues() {
-            document.getElementById('val-sekeliling').innerText = "0";
-            document.getElementById('val-reddot').innerText = "0";
-            document.getElementById('val-2x').innerText = "0";
-            document.getElementById('val-4x').innerText = "0";
-            document.getElementById('val-sniper').innerText = "0";
-            document.getElementById('val-kamera').innerText = "0";
+            document.querySelectorAll('.sensi-value').forEach(el => el.innerText = "0");
             localStorage.removeItem('saved_sensi_data');
         }
 
         function displaySensiUI(s1, s2, s3, s4, s5, s6) {
-            document.getElementById('val-sekeliling').innerText = s1;
-            document.getElementById('val-reddot').innerText = s2;
-            document.getElementById('val-2x').innerText = s3;
-            document.getElementById('val-4x').innerText = s4;
-            document.getElementById('val-sniper').innerText = s5;
-            document.getElementById('val-kamera').innerText = s6;
+            document.getElementById('val-sekeliling').innerText = s1; document.getElementById('val-reddot').innerText = s2;
+            document.getElementById('val-2x').innerText = s3; document.getElementById('val-4x').innerText = s4;
+            document.getElementById('val-sniper').innerText = s5; document.getElementById('val-kamera').innerText = s6;
         }
 
         function generateSensiData() {
             var mode = document.getElementById('sensi-preset-mode').value;
             let s1, s2, s3, s4, s5, s6;
-
-            if (mode === "low") {
-                s1 = Math.floor(Math.random() * (85 - 75 + 1)) + 75;
-                s2 = Math.floor(Math.random() * (80 - 70 + 1)) + 70;
-                s3 = Math.floor(Math.random() * (78 - 68 + 1)) + 68;
-                s4 = Math.floor(Math.random() * (75 - 65 + 1)) + 65;
-                s5 = Math.floor(Math.random() * (45 - 35 + 1)) + 35;
-                s6 = Math.floor(Math.random() * (55 - 45 + 1)) + 45;
-            } else if (mode === "med") {
-                s1 = Math.floor(Math.random() * (94 - 86 + 1)) + 86;
-                s2 = Math.floor(Math.random() * (92 - 82 + 1)) + 82;
-                s3 = Math.floor(Math.random() * (88 - 80 + 1)) + 80;
-                s4 = Math.floor(Math.random() * (85 - 76 + 1)) + 76;
-                s5 = Math.floor(Math.random() * (55 - 46 + 1)) + 46;
-                s6 = Math.floor(Math.random() * (70 - 56 + 1)) + 56;
-            } else if (mode === "high") {
-                s1 = Math.floor(Math.random() * (100 - 95 + 1)) + 95;
-                s2 = Math.floor(Math.random() * (99 - 93 + 1)) + 93;
-                s3 = Math.floor(Math.random() * (98 - 90 + 1)) + 90;
-                s4 = Math.floor(Math.random() * (96 - 88 + 1)) + 88;
-                s5 = Math.floor(Math.random() * (68 - 56 + 1)) + 56;
-                s6 = Math.floor(Math.random() * (88 - 72 + 1)) + 72;
-            } else {
-                s1 = 98; s2 = 92; s3 = 90; s4 = 86; s5 = 50; s6 = 65;
-            }
-
+            if (mode === "low") { s1 = Math.floor(Math.random() * 11) + 75; s2 = Math.floor(Math.random() * 11) + 70; s3 = Math.floor(Math.random() * 11) + 68; s4 = Math.floor(Math.random() * 11) + 65; s5 = Math.floor(Math.random() * 11) + 35; s6 = Math.floor(Math.random() * 11) + 45; } 
+            else if (mode === "med") { s1 = Math.floor(Math.random() * 9) + 86; s2 = Math.floor(Math.random() * 11) + 82; s3 = Math.floor(Math.random() * 9) + 80; s4 = Math.floor(Math.random() * 10) + 76; s5 = Math.floor(Math.random() * 10) + 46; s6 = Math.floor(Math.random() * 15) + 56; } 
+            else if (mode === "high") { s1 = Math.floor(Math.random() * 6) + 95; s2 = Math.floor(Math.random() * 7) + 93; s3 = Math.floor(Math.random() * 9) + 90; s4 = Math.floor(Math.random() * 9) + 88; s5 = Math.floor(Math.random() * 13) + 56; s6 = Math.floor(Math.random() * 17) + 72; } 
+            else { s1 = 98; s2 = 92; s3 = 90; s4 = 86; s5 = 50; s6 = 65; }
             displaySensiUI(s1, s2, s3, s4, s5, s6);
             localStorage.setItem('saved_sensi_data', JSON.stringify({s1, s2, s3, s4, s5, s6}));
             logTweakToFirebase('sensitivity_presets', {s1, s2, s3, s4, s5, s6});
-
-            if (typeof Android !== "undefined") {
-                Android.applySensiSystem(s1, s2, s3, s4, s5, s6);
-            }
-            showDialog("success", "Generate Berhasil", "Sensitivitas optimal tipe (" + mode.toUpperCase() + ") siap diterapkan!");
-        }
-
-        function triggerApplyResolution() {
-            var w = document.getElementById('input-width').value;
-            var h = document.getElementById('input-height').value;
-            var dpi = document.getElementById('input-dpi').value;
-
-            if (dpi && (parseInt(dpi) < 388 || parseInt(dpi) > 580)) {
-                showDialog("error", "Kesalahan DPI", "DPI harus diatur dalam ambang batas aman antara 388 sampai 580!");
-                return;
-            }
-
-            localStorage.setItem('res_w', w);
-            localStorage.setItem('res_h', h);
-            localStorage.setItem('res_dpi', dpi);
-            logTweakToFirebase('resolution_config', {width: w, height: h, dpi: dpi});
-
-            if (typeof Android !== "undefined") { Android.applyResolution(w, h, dpi); }
-            showDialog("success", "Berhasil Diubah", "Resolusi layar kustom " + w + "x" + h + " berhasil di-apply.");
-        }
-
-        function triggerResetResolution() {
-            document.getElementById('input-width').value = "";
-            document.getElementById('input-height').value = "";
-            document.getElementById('input-dpi').value = "";
-
-            localStorage.removeItem('res_w');
-            localStorage.removeItem('res_h');
-            localStorage.removeItem('res_dpi');
-
-            if (typeof Android !== "undefined") { Android.resetResolution(); }
-            showDialog("info", "Reset Resolusi", "Resolusi dan kepadatan layar (DPI) dikembalikan ke standar bawaan pabrik.");
+            if (typeof Android !== "undefined") { Android.applySensiSystem(s1, s2, s3, s4, s5, s6); }
+            showDialog("success", "Generate Berhasil", "Sensitivitas siap diterapkan!");
         }
 
         function syncWithAndroid() {
             if (typeof Android !== 'undefined') {
-                const tweaks = ["easy_drag", "drag_hs", "fps_boost", "sensitivity_tuning", "max_performance"];
-                tweaks.forEach(tweak => {
-                    let isChecked = Android.getSavedTweakStatus(tweak);
-                    let checkbox = document.getElementById('tweak_' + tweak);
-                    if (checkbox) { checkbox.checked = isChecked; }
+                ["easy_drag", "drag_hs", "fps_boost", "sensitivity_tuning", "max_performance"].forEach(tweak => {
+                    let chk = document.getElementById('tweak_' + tweak);
+                    if (chk) { chk.checked = Android.getSavedTweakStatus(tweak); }
                 });
-
-                const features = ["sensitivity", "performance", "touch"];
-                features.forEach(feat => {
-                    let isChecked = Android.getSavedFeatureStatus(feat);
-                    let checkbox = document.getElementById('feat_' + feat);
-                    if (checkbox) { checkbox.checked = isChecked; }
+                ["sensitivity", "performance", "touch"].forEach(feat => {
+                    let chk = document.getElementById('feat_' + feat);
+                    if (chk) { chk.checked = Android.getSavedFeatureStatus(feat); }
                 });
-
                 if(localStorage.getItem('res_w')) {
                     document.getElementById('input-width').value = localStorage.getItem('res_w');
                     document.getElementById('input-height').value = localStorage.getItem('res_h');
                 }
-                if(localStorage.getItem('res_dpi')) {
-                    document.getElementById('input-dpi').value = localStorage.getItem('res_dpi');
-                }
-
-                let sensiPanelVisible = localStorage.getItem('sensi_panel_visible') === 'true';
-                document.getElementById('switch-sensi').checked = sensiPanelVisible;
-                if(sensiPanelVisible) {
+                if(localStorage.getItem('res_dpi')) { document.getElementById('input-dpi').value = localStorage.getItem('res_dpi'); }
+                let activeSensi = localStorage.getItem('sensi_panel_visible') === 'true';
+                document.getElementById('switch-sensi').checked = activeSensi;
+                if(activeSensi) {
                     document.getElementById('panel-sensi').style.display = 'block';
-                    let cachedSensi = localStorage.getItem('saved_sensi_data');
-                    if(cachedSensi) {
-                        let s = JSON.parse(cachedSensi);
-                        displaySensiUI(s.s1, s.s2, s.s3, s.s4, s.s5, s.s6);
-                    }
+                    let cached = localStorage.getItem('saved_sensi_data');
+                    if(cached) { let s = JSON.parse(cached); displaySensiUI(s.s1, s.s2, s.s3, s.s4, s.s5, s.s6); }
                 }
             }
         }
 
-        document.addEventListener("DOMContentLoaded", function() { 
-            loadRealtimeData(); 
-            syncWithAndroid();
-        });
-
-        // Logika Drag & Slide To Login Bulat iOS
+        // Logic Slide login iOS Sheet Handler
         document.addEventListener("DOMContentLoaded", function() {
+            syncWithAndroid();
             const handle = document.getElementById('slider-trigger');
             const container = document.getElementById('slide-lock-container');
             const progress = document.getElementById('slide-bg-progress');
             const labelText = document.getElementById('slide-label-text');
-            
-            let isDragging = false;
-            let startX = 0;
-            let maxSlide = container.clientWidth - handle.clientWidth - 8;
+            let isDragging = false, startX = 0, maxSlide = 0;
 
             function onStart(e) {
                 if (isMaintenanceMode) return;
@@ -1049,53 +953,30 @@
                 startX = (e.touches ? e.touches[0].clientX : e.clientX) - handle.offsetLeft;
                 maxSlide = container.clientWidth - handle.clientWidth - 8;
             }
-
             function onMove(e) {
                 if (!isDragging) return;
                 let clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 let left = clientX - startX;
-
-                if (left < 4) left = 4;
-                if (left > maxSlide) left = maxSlide;
-
+                if (left < 4) left = 4; if (left > maxSlide) left = maxSlide;
                 handle.style.transform = `translateX(${left - 4}px)`;
                 progress.style.width = `${left + (handle.clientWidth / 2)}px`;
 
                 if (left >= maxSlide - 4) {
                     isDragging = false;
                     handle.style.transform = `translateX(${maxSlide - 4}px)`;
-                    labelText.innerText = "LAUNCHING GAME...";
-                    labelText.style.color = "#10B981";
-
+                    labelText.innerText = "LAUNCHING GAME..."; labelText.style.color = "#10B981";
                     logTweakToFirebase('game_launched', currentPackage);
-
-                    if (typeof Android !== "undefined") { 
-                        Android.runGame(currentPackage); 
-                    }
-                    
+                    if (typeof Android !== "undefined") { Android.runGame(currentPackage); }
                     setTimeout(() => {
-                        closeGameLauncher();
-                        handle.style.transform = 'translateX(0px)';
-                        progress.style.width = '0px';
-                        labelText.innerText = "SLIDE TO LOGIN";
-                        labelText.style.color = "#61758F";
+                        closeGameLauncher(); handle.style.transform = 'translateX(0px)'; progress.style.width = '0px';
+                        labelText.innerText = "SLIDE TO LOGIN"; labelText.style.color = "#61758F";
                     }, 1500);
                 }
             }
-
-            function onEnd() {
-                if (!isDragging) return;
-                isDragging = false;
-                handle.style.transform = 'translateX(0px)';
-                progress.style.width = '0px';
-            }
-
-            handle.addEventListener('mousedown', onStart);
-            handle.addEventListener('touchstart', onStart);
-            window.addEventListener('mousemove', onMove);
-            window.addEventListener('touchmove', onMove);
-            window.addEventListener('mouseup', onEnd);
-            window.addEventListener('touchend', onEnd);
+            function onEnd() { if (!isDragging) return; isDragging = false; handle.style.transform = 'translateX(0px)'; progress.style.width = '0px'; }
+            handle.addEventListener('mousedown', onStart); handle.addEventListener('touchstart', onStart);
+            window.addEventListener('mousemove', onMove); window.addEventListener('touchmove', onMove);
+            window.addEventListener('mouseup', onEnd); window.addEventListener('touchend', onEnd);
         });
     </script>
 </body>

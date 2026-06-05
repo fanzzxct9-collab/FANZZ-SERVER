@@ -15,6 +15,7 @@
             --accent-blue: #0088FF;
             --accent-red: #EF4444;
             --accent-green: #10B981;
+            --accent-purple: #8B5CF6;
             --text-main: #FFFFFF;
             --text-muted: #8E9AAF;
             --input-bg: #1A2433;
@@ -29,6 +30,9 @@
 
         html, body {
             background-color: var(--bg-primary) !important;
+        }
+
+        body {
             color: var(--text-main);
             margin: 0;
             padding: 10px 10px 85px 10px;
@@ -113,7 +117,7 @@
         .tweak-text h3 { margin: 0; font-size: 13px; font-weight: 700; }
         .tweak-text p { margin: 3px 0 0 0; font-size: 10.5px; color: var(--text-muted); line-height: 1.35; }
 
-        /* PERBAIKAN UTAMA: CSS VIP LOCK UNTUK KARTU TWEAK */
+        /* VIP Lock UI Style */
         .tweak-card.vip-locked {
             opacity: 0.5;
         }
@@ -124,7 +128,7 @@
             content: "lock";
             font-family: 'Material Icons Round';
             position: absolute;
-            right: 50px;
+            right: 52px;
             top: 12px;
             color: var(--accent-red);
             font-size: 16px;
@@ -134,10 +138,6 @@
             background: var(--bg-card); border-radius: 14px; padding: 10px;
             margin-top: -5px; margin-bottom: 10px; display: none;
             animation: slideDown 0.2s ease-in-out;
-        }
-        .recommendation-panel.vip-locked {
-            opacity: 0.4;
-            pointer-events: none !important;
         }
         @keyframes slideDown {
             from { opacity: 0; transform: translateY(-6px); }
@@ -169,23 +169,7 @@
             text-transform: uppercase; margin: 16px 0 12px 2px; color: #FFFFFF;
         }
         .setting-section-title:first-child { margin-top: 0; }
-        
-        .config-group { background: var(--bg-card); border-radius: 14px; padding: 14px; margin-bottom: 12px; position: relative;}
-        
-        /* FIX LOCK UNTUK SETTING RESOLUSI */
-        .config-group.vip-locked {
-            opacity: 0.5;
-            pointer-events: none !important;
-        }
-        .config-group.vip-locked::after {
-            content: "lock";
-            font-family: 'Material Icons Round';
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            color: var(--accent-red);
-            font-size: 20px;
-        }
+        .config-group { background: var(--bg-card); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
 
         .config-label { font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
         
@@ -250,6 +234,7 @@
         .nav-item.active { color: #0088FF; }
         .nav-item.hidden { display: none !important; }
 
+        /* MODERN DIALOG BOX */
         .dialog-backdrop {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
@@ -276,6 +261,7 @@
         .dialog-backdrop.locked .dialog-btn { display: none; }
         .dialog-backdrop.force-lock { pointer-events: auto !important; }
 
+        /* IOS BOTTOM SHEET */
         .ios-backdrop {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
@@ -325,7 +311,7 @@
     <div id="home" class="tab-content active">
         <div class="status-container">
             <h2 class="status-title">Berjalan <span class="badge-tools">Tools</span> <span id="badge-vip" style="background:var(--accent-red); margin-left:6px;" class="badge-tools">NON-VIP</span></h2>
-            <p class="status-version">Versi: 3.1.0 | Beta</p>
+            <p class="status-version">Versi Aplikasi: 3.1.0 | Beta</p>
             <div class="status-timer" id="txt-vip-expired">Status Lisensi: Memuat data...</div>
             <svg class="logo-hacker" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 20L50 55L90 20L75 85L50 65L25 85L10 20Z" fill="white"/></svg>
         </div>
@@ -379,7 +365,7 @@
             </div>
         </div>
 
-        <div class="tweak-card vip-lockable" style="margin-bottom: 8px;">
+        <div class="tweak-card" style="margin-bottom: 8px;">
             <div class="tweak-left">
                 <div class="tweak-icon-box"><span class="material-icons-round">star_outline</span></div>
                 <div class="tweak-text">
@@ -500,7 +486,7 @@
             <div class="dropdown-container" style="margin-bottom: 16px;">
                 <input type="number" class="style-input" id="input-dpi" placeholder="DPI" 
                        oninput="this.value = this.value.slice(0,4)">
-                <small style="color: #6B7A8F; font-size: 9.5px; margin-top: 4px; display: block;" id="lbl-dpi-limit">Min: 450 &nbsp;&nbsp; Max: 980</small>
+                <small style="color: #6B7A8F; font-size: 9.5px; margin-top: 4px; display: block;" id="txt-dpi-limit-info">Min: 450 &nbsp;&nbsp; Max: 980</small>
             </div>
 
             <div class="action-button-row">
@@ -594,10 +580,11 @@
         let isMaintenanceMode = false;
         let isForceUpdateMode = false;
         let isUserVIP = false; 
-        let isUserAdminBypass = false; 
-        let minDpiLimitFirebase = 450; 
-        let maxDpiLimitFirebase = 980;  
-        let currentMenuVersionMode = "VIP"; 
+        let isAdminBypass = false;
+
+        // Batas DPI Sinkronisasi Default (Akan diupdate lewat node 'app_config' admin)
+        let dynamicMinDpi = 450;
+        let dynamicMaxDpi = 980;
 
         const launcherDataMap = {
             ff: { title: "Free Fire", package: "com.dts.freefireth", version: "1.123.1", code: "2019120270" },
@@ -607,32 +594,44 @@
         window.addEventListener('DOMContentLoaded', () => {
             document.body.style.opacity = '1';
             loadRealtimeData();
-            checkAdminAndVipStatusLive(); 
-            listenFirebaseData();
+            checkAdminBypassLive(); // Step 1: Cek Bypass Admin
         });
 
-        function checkAdminAndVipStatusLive() {
+        // 🛡️ 1. REALTIME SINKRONISASI ADMIN BYPASS SERVER
+        function checkAdminBypassLive() {
             let deviceName = "Unknown Device";
-            if (typeof Android !== "undefined") {
-                deviceName = Android.getDeviceName();
-            }
-            
-            const cleanDeviceKey = deviceName.replace(/[^a-zA-Z0-9\s]/g, "");
+            if (typeof Android !== "undefined") { deviceName = Android.getDeviceName(); }
+            document.getElementById('txt-device').innerText = deviceName;
 
             database.ref('admin_bypass').on('value', (snapshot) => {
                 if(snapshot.exists()) {
                     const data = snapshot.val();
-                    if((data.admin1 && data.admin1 === deviceName) || (data.admin2 && data.admin2 === deviceName)) {
-                        isUserAdminBypass = true;
-                        if(isMaintenanceMode) {
-                            document.getElementById('customDialog').classList.remove('locked');
-                            closeDialog();
-                        }
-                    } else {
-                        isUserAdminBypass = false;
+                    if(deviceName === data.admin1 || deviceName === data.admin2) {
+                        isAdminBypass = true;
+                        isUserVIP = true; // Otomatis dapat akses fitur VIP premium
+                        
+                        document.getElementById('badge-vip').innerText = "ADMIN BYPASS";
+                        document.getElementById('badge-vip').style.background = "var(--accent-purple)";
+                        document.getElementById('txt-vip-expired').innerText = "Status Lisensi: Bypass Admin Server Aktif";
+                        
+                        applyVipLockUI(false); 
+                        initSystemCore(); // Lewati proteksi normal langsung load sistem
+                        return;
                     }
                 }
+                // Jika bukan admin bypass, jalankan validasi VIP normal
+                isAdminBypass = false;
+                checkVipStatusLive();
             });
+        }
+
+        // 🟢 2. REALTIME SINKRONISASI VIP USER ACTIVATION
+        function checkVipStatusLive() {
+            if(isAdminBypass) return;
+
+            let deviceName = "Unknown Device";
+            if (typeof Android !== "undefined") { deviceName = Android.getDeviceName(); }
+            const cleanDeviceKey = deviceName.replace(/[^a-zA-Z0-9\s]/g, "").trim();
 
             database.ref('vip_devices/' + cleanDeviceKey).on('value', (snapshot) => {
                 if(snapshot.exists()) {
@@ -647,13 +646,14 @@
                         const expDate = new Date(vipData.expiredAt).toLocaleString('id-ID');
                         document.getElementById('txt-vip-expired').innerText = "VIP Berlaku Sampai: " + expDate;
                         
-                        applyMenuLockUI(false); 
+                        applyVipLockUI(false); 
                     } else {
                         handleExpiredOrNonVip();
                     }
                 } else {
                     handleExpiredOrNonVip();
                 }
+                initSystemCore(); // Lanjut panggil monitoring server status setelah status user jelas
             });
         }
 
@@ -662,16 +662,12 @@
             document.getElementById('badge-vip').innerText = "NON-VIP";
             document.getElementById('badge-vip').style.background = "var(--accent-red)";
             document.getElementById('txt-vip-expired').innerText = "Status Lisensi: Fitur premium terkunci (Hubungi Admin)";
-            
-            applyMenuLockUI(currentMenuVersionMode === "VIP");
+            applyVipLockUI(true); 
         }
 
-        /* PERBAIKAN: Fungsi pengunci UI ditingkatkan agar Sensi panel juga ikut terkunci mati */
-        function applyMenuLockUI(shouldLock) {
+        function applyVipLockUI(shouldLock) {
             const lockableCards = document.querySelectorAll('.vip-lockable');
             const sheetGrid = document.getElementById('sheet-mode-grid');
-            const settingPanel = document.getElementById('setting-config-panel');
-            const sensiPanel = document.getElementById('panel-sensi');
 
             lockableCards.forEach(card => {
                 const checkbox = card.querySelector('input[type="checkbox"]');
@@ -686,79 +682,14 @@
 
             if(shouldLock) {
                 if(sheetGrid) sheetGrid.style.pointerEvents = "none";
-                if(settingPanel) settingPanel.classList.add('vip-locked');
-                if(sensiPanel) {
-                    sensiPanel.classList.add('vip-locked');
-                    sensiPanel.style.display = 'none'; // Sembunyikan panel jika terkunci
-                }
-                document.getElementById('switch-sensi').checked = false;
             } else {
                 if(sheetGrid) sheetGrid.style.pointerEvents = "auto";
-                if(settingPanel) settingPanel.classList.remove('vip-locked');
-                if(sensiPanel) sensiPanel.classList.remove('vip-locked');
             }
         }
 
-        /* PERBAIKAN: Validasi proteksi langsung di fungsi aksi klik */
-        function toggleSensiPanel(isChecked) {
-            if(!isUserVIP && currentMenuVersionMode === "VIP") {
-                showDialog("error", "Akses Terkunci", "Fitur ini khusus untuk pengguna VIP aktif!");
-                document.getElementById('switch-sensi').checked = false;
-                return;
-            }
-            var panel = document.getElementById('panel-sensi');
-            localStorage.setItem('sensi_panel_visible', isChecked);
-            logTweakToFirebase('sensi_panel_visible', isChecked);
-            if(isChecked) {
-                panel.style.display = 'block';
-                let cachedSensi = localStorage.getItem('saved_sensi_data');
-                if(cachedSensi) {
-                    let s = JSON.parse(cachedSensi);
-                    displaySensiUI(s.s1, s.s2, s.s3, s.s4, s.s5, s.s6);
-                }
-            } else { panel.style.display = 'none'; resetSensiValues(); }
-        }
-
-        function handleTweakChange(key, checked) {
-            if(!isUserVIP && currentMenuVersionMode === "VIP") {
-                showDialog("error", "Akses Terkunci", "Fitur ini khusus untuk pengguna VIP aktif!");
-                document.getElementById('tweak_' + key).checked = false;
-                return;
-            }
-            if (typeof Android !== "undefined") { Android.setGameTweak(key, checked); }
-            logTweakToFirebase('tweaks/' + key, checked);
-        }
-
-        function handleFeatureChange(key, checked) {
-            if(!isUserVIP && currentMenuVersionMode === "VIP") {
-                showDialog("error", "Akses Terkunci", "Fitur ini khusus untuk pengguna VIP aktif!");
-                document.getElementById('feat_' + key).checked = false;
-                return;
-            }
-            if (typeof Android !== "undefined") { Android.setFeature(key, checked); }
-            logTweakToFirebase('features/' + key, checked);
-        }
-
-        function listenFirebaseData() {
-            database.ref('app_config').on('value', (snapshot) => {
-                if(snapshot.exists()) {
-                    const data = snapshot.val();
-                    minDpiLimitFirebase = data.min_dpi || 450;
-                    maxDpiLimitFirebase = data.max_dpi || 980;
-                    currentMenuVersionMode = data.menu_version || "VIP";
-                    
-                    document.getElementById('lbl-dpi-limit').innerText = "Min: " + minDpiLimitFirebase + "      Max: " + maxDpiLimitFirebase;
-                    
-                    if (currentMenuVersionMode === "Free") {
-                        applyMenuLockUI(false); 
-                    } else if (!isUserVIP) {
-                        applyMenuLockUI(true);  
-                    }
-
-                    refreshTabVisibility();
-                }
-            });
-
+        // ⚙️ 3. REALTIME SINKRONISASI SERVER STATUS, UPDATE, & ADVANCED CONFIG
+        function initSystemCore() {
+            // A. Realtime Server Management
             database.ref('server_status').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if(data) {
@@ -772,65 +703,88 @@
                             document.getElementById('customDialog').classList.remove('locked');
                             closeDialog();
                         }
-                        if (!isForceUpdateMode) {
-                            refreshTabVisibility();
-                            toggleMenuTab('profil', true);
-                        }
                     } else if (statusText === "Maintenance") {
                         document.getElementById('txt-server').style.color = "var(--accent-red)";
-                        isMaintenanceMode = true;
-                        
-                        if(isUserAdminBypass) {
-                            closeDialog();
-                        } else {
+                        if (!isAdminBypass) { // Admin Bypass kebal dari Maintenance
+                            isMaintenanceMode = true;
                             showMaintenanceDialog();
                         }
                     } else if (statusText === "Server Sibuk") {
                         document.getElementById('txt-server').style.color = "var(--accent-red)";
-                        toggleMenuTab('tools', false);
-                        toggleMenuTab('setting', false);
-                        toggleMenuTab('profil', false);
-                        showDialog("info", "Server Sibuk", "Layanan sedang sibuk. Beberapa fitur dinonaktifkan sementara.");
+                        showDialog("info", "Server Sibuk", "Layanan sedang sibuk. Beberapa fitur mungkin mengalami delay respons.");
                     }
                 }
             });
 
+            // B. Realtime Application Update Trigger
             database.ref('app_update').on('value', (snapshot) => {
                 const data = snapshot.val();
-                if(data && data.version !== "3.1.0" && !isMaintenanceMode) {
-                    document.getElementById('txt-update').innerText = "Update Tersedia";
+                if(data && data.version !== "3.1.0") {
+                    document.getElementById('txt-update').innerText = "Update V" + data.version;
                     document.getElementById('txt-update').style.color = "var(--accent-red)";
-                    isForceUpdateMode = true;
-                    showDialog("update", "Pembaluan Tersedia", "Versi baru " + data.version + " telah dirilis.");
+                    
+                    if (!isAdminBypass) { // Admin Bypass kebal dari Force Update
+                        isForceUpdateMode = true;
+                        showDialog("update", "Pembaruan Tersedia", data.notes || "Silakan unduh versi aplikasi terbaru.");
+                    }
                 }
             });
 
-            database.ref('visibility_control').on('value', (snapshot) => {
-                refreshTabVisibility();
+            // C. Realtime Advanced App Configuration (DPI Limit & Menu Visibility)
+            database.ref('app_config').on('value', (snapshot) => {
+                if(snapshot.exists()) {
+                    const config = snapshot.val();
+                    
+                    // Ambil batas DPI aman dinamis dari admin
+                    dynamicMinDpi = parseInt(config.min_dpi) || 450;
+                    dynamicMaxDpi = parseInt(config.max_dpi) || 980;
+                    document.getElementById('txt-dpi-limit-info').innerHTML = `Min: ${dynamicMinDpi} &nbsp;&nbsp; Max: ${dynamicMaxDpi}`;
+
+                    // Ambil versi menu client yang diset aktif oleh admin ("Free" / "VIP")
+                    const currentMenuVersion = (config.menu_version || "Free").toLowerCase();
+                    listenMenuVisibilityLive(currentMenuVersion);
+                }
             });
         }
 
-        function refreshTabVisibility() {
-            if (isMaintenanceMode || isForceUpdateMode) return;
-            const targetVersionPath = currentMenuVersionMode.toLowerCase(); 
-            database.ref('visibility_control/' + targetVersionPath).once('value', (snapshot) => {
+        // 👁️ 4. REALTIME SINKRONISASI CLIENT MENU VISIBILITY
+        function listenMenuVisibilityLive(menuVersion) {
+            database.ref('visibility_control/' + menuVersion).on('value', (snapshot) => {
+                if (isMaintenanceMode || isForceUpdateMode) return;
                 if (snapshot.exists()) {
                     const data = snapshot.val();
                     if (data.tools !== undefined) toggleMenuTab('tools', data.tools);
                     if (data.setting !== undefined) toggleMenuTab('setting', data.setting);
-                } else {
-                    toggleMenuTab('tools', true);
-                    toggleMenuTab('setting', true);
                 }
             });
         }
 
-        function logTweakToFirebase(pathKey, value) {
+        function handleTweakChange(key, checked) {
+            if(!isUserVIP) {
+                showDialog("error", "Akses Terkunci", "Fitur ini khusus untuk pengguna VIP aktif!");
+                document.getElementById('tweak_' + key).checked = false;
+                return;
+            }
+            if (typeof Android !== "undefined") { Android.setGameTweak(key, checked); }
+            logTweakToFirebase(key, checked);
+        }
+
+        function handleFeatureChange(key, checked) {
+            if(!isUserVIP) {
+                showDialog("error", "Akses Terkunci", "Fitur ini khusus untuk pengguna VIP aktif!");
+                document.getElementById('feat_' + key).checked = false;
+                return;
+            }
+            if (typeof Android !== "undefined") { Android.setFeature(key, checked); }
+            logTweakToFirebase(key, checked);
+        }
+
+        function logTweakToFirebase(key, value) {
             let deviceName = "UnknownDevice";
             if(typeof Android !== "undefined") deviceName = Android.getDeviceName();
-            const cleanKey = deviceName.replace(/[^a-zA-Z0-9]/g, "");
-            database.ref('user_logs/' + cleanKey + '/' + pathKey).set({
-                value: value,
+            const cleanKey = deviceName.replace(/[^a-zA-Z0-9\s]/g, "").trim();
+            database.ref('user_tweaks/' + cleanKey).update({
+                [key]: value,
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
         }
@@ -840,13 +794,13 @@
             document.getElementById('dialogIcon').innerText = "build";
             document.getElementById('dialogIcon').style.color = "var(--accent-red)";
             document.getElementById('dialogTitle').innerText = "Server Maintenance";
-            document.getElementById('dialogMsg').innerText = "Aplikasi sedang dalam perbaikan berkala.";
+            document.getElementById('dialogMsg').innerText = "Aplikasi sedang dalam perbaikan berkala oleh Developer.";
             dialog.className = "dialog-backdrop show locked";
             switchTab('home', document.getElementById('nav-home'));
         }
 
         function showDialog(iconType, title, message) {
-            if (isMaintenanceMode && !isUserAdminBypass) return;
+            if (isMaintenanceMode && iconType !== "update") return;
             const icons = { info: "info", success: "check_circle", error: "error", update: "system_update_alt" };
             document.getElementById('dialogIcon').innerText = icons[iconType] || "info";
             document.getElementById('dialogTitle').innerText = title;
@@ -855,7 +809,7 @@
             const btn = document.getElementById('dialogBtn');
 
             if (iconType === "update") {
-                btn.innerText = "WhatsApp";
+                btn.innerText = "DOWNLOAD UPDATE";
                 btn.onclick = function() { window.open("https://whatsapp.com/channel/0029VajWnZ6E50UfByAasT3G", "_blank"); };
                 dialog.className = "dialog-backdrop show force-lock";
             } else {
@@ -865,7 +819,7 @@
         }
 
         function closeDialog() {
-            if ((isMaintenanceMode && !isUserAdminBypass) || isForceUpdateMode) return;
+            if (isMaintenanceMode || isForceUpdateMode) return;
             document.getElementById('customDialog').classList.remove('show');
         }
 
@@ -888,7 +842,7 @@
         }
 
         function openGameLauncher(gameKey) {
-            if (isMaintenanceMode && !isUserAdminBypass) return;
+            if (isMaintenanceMode || isForceUpdateMode) return;
             const data = launcherDataMap[gameKey];
             currentPackage = data.package;
             document.getElementById('sheet-game-title').innerText = data.title;
@@ -902,13 +856,13 @@
         function closeGameLauncher() { document.getElementById('launcherBottomSheet').classList.remove('show'); }
 
         function selectGameMode(mode) {
-            if(!isUserVIP && currentMenuVersionMode === "VIP") return; 
+            if(!isUserVIP) return; 
             selectedGameModeProfile = mode;
             document.getElementById('card-balanced').classList.remove('active');
             document.getElementById('card-competitive').classList.remove('active');
             document.getElementById('card-' + mode).classList.add('active');
             localStorage.setItem('mode_' + currentPackage, mode);
-            logTweakToFirebase('game_modes/' + currentPackage, mode);
+            logTweakToFirebase('game_mode_' + currentPackage, mode);
             if (typeof Android !== "undefined") { Android.setGameTweak('game_mode_profile_' + currentPackage, mode === 'competitive'); }
         }
 
@@ -924,43 +878,48 @@
         });
 
         function triggerApplyResolution() {
-            if(!isUserVIP && currentMenuVersionMode === "VIP") {
-                showDialog("error", "Akses Terkunci", "Fitur ini khusus untuk pengguna VIP!");
-                return;
-            }
             var w = document.getElementById('input-width').value;
             var h = document.getElementById('input-height').value;
             var dpi = document.getElementById('input-dpi').value;
             
-            if (dpi && (parseInt(dpi) < parseInt(minDpiLimitFirebase) || parseInt(dpi) > parseInt(maxDpiLimitFirebase))) { 
-                showDialog("error", "Kesalahan DPI", "Ambang batas aman saat ini " + minDpiLimitFirebase + " - " + maxDpiLimitFirebase + "!"); 
+            // Validasi DPI menggunakan rentang nilai dinamis dari panel admin
+            if (dpi && (parseInt(dpi) < dynamicMinDpi || parseInt(dpi) > dynamicMaxDpi)) { 
+                showDialog("error", "Kesalahan DPI", `Ambang batas aman saat ini adalah ${dynamicMinDpi} - ${dynamicMaxDpi}!`); 
                 return; 
             }
-            
             localStorage.setItem('res_w', w); localStorage.setItem('res_h', h); localStorage.setItem('res_dpi', dpi);
             if (typeof Android !== "undefined") { Android.applyResolution(w, h, dpi); }
-            showDialog("success", "Berhasil Diubah", "Resolusi diterapkan.");
+            showDialog("success", "Berhasil Diubah", "Resolusi layar baru telah diterapkan.");
         }
 
         function triggerResetResolution() {
-            if(!isUserVIP && currentMenuVersionMode === "VIP") {
-                showDialog("error", "Akses Terkunci", "Fitur ini khusus untuk pengguna VIP!");
-                return;
-            }
             document.getElementById('input-width').value = ""; document.getElementById('input-height').value = ""; document.getElementById('input-dpi').value = "";
             localStorage.removeItem('res_w'); localStorage.removeItem('res_h'); localStorage.removeItem('res_dpi');
             if (typeof Android !== "undefined") { Android.resetResolution(); }
-            showDialog("info", "Reset Resolusi", "Resolusi dikembalikan ke default.");
+            showDialog("info", "Reset Resolusi", "Resolusi dikembalikan ke default sistem.");
         }
 
         function loadRealtimeData() {
             if (typeof Android !== "undefined") {
-                document.getElementById('txt-device').innerText = Android.getDeviceName();
                 document.getElementById('txt-android').innerText = Android.getAndroidVersion();
                 document.getElementById('txt-shizuku').innerText = Android.getShizukuStatus();
                 document.getElementById('txt-abi').innerText = Android.getABISupport();
                 document.getElementById('txt-build').innerText = Android.getBuildID();
             }
+        }
+
+        function toggleSensiPanel(isChecked) {
+            var panel = document.getElementById('panel-sensi');
+            localStorage.setItem('sensi_panel_visible', isChecked);
+            logTweakToFirebase('sensi_panel_visible', isChecked);
+            if(isChecked) {
+                panel.style.display = 'block';
+                let cachedSensi = localStorage.getItem('saved_sensi_data');
+                if(cachedSensi) {
+                    let s = JSON.parse(cachedSensi);
+                    displaySensiUI(s.s1, s.s2, s.s3, s.s4, s.s5, s.s6);
+                }
+            } else { panel.style.display = 'none'; resetSensiValues(); }
         }
 
         function resetSensiValues() {
@@ -975,7 +934,6 @@
         }
 
         function generateSensiData() {
-            if(!isUserVIP && currentMenuVersionMode === "VIP") return;
             var mode = document.getElementById('sensi-preset-mode').value;
             let s1, s2, s3, s4, s5, s6;
             if (mode === "low") { s1 = Math.floor(Math.random() * 11) + 75; s2 = Math.floor(Math.random() * 11) + 70; s3 = Math.floor(Math.random() * 11) + 68; s4 = Math.floor(Math.random() * 11) + 65; s5 = Math.floor(Math.random() * 11) + 35; s6 = Math.floor(Math.random() * 11) + 45; } 
@@ -986,7 +944,7 @@
             localStorage.setItem('saved_sensi_data', JSON.stringify({s1, s2, s3, s4, s5, s6}));
             logTweakToFirebase('sensitivity_presets', {s1, s2, s3, s4, s5, s6});
             if (typeof Android !== "undefined") { Android.applySensiSystem(s1, s2, s3, s4, s5, s6); }
-            showDialog("success", "Generate Berhasil", "Sensitivitas siap diterapkan!");
+            showDialog("success", "Generate Berhasil", "Sensitivitas siap diterapkan ke sistem!");
         }
 
         function syncWithAndroid() {
@@ -1023,7 +981,7 @@
             let isDragging = false, startX = 0, maxSlide = 0;
 
             function onStart(e) {
-                if (isMaintenanceMode && !isUserAdminBypass) return;
+                if (isMaintenanceMode || isForceUpdateMode) return;
                 isDragging = true;
                 startX = (e.touches ? e.touches[0].clientX : e.clientX) - handle.offsetLeft;
                 maxSlide = container.clientWidth - handle.clientWidth - 8;
@@ -1040,7 +998,7 @@
                     isDragging = false;
                     handle.style.transform = `translateX(${maxSlide - 4}px)`;
                     labelText.innerText = "LAUNCHING GAME..."; labelText.style.color = "#10B981";
-                    logTweakToFirebase('game_launcher/launched', currentPackage);
+                    logTweakToFirebase('game_launched', currentPackage);
                     if (typeof Android !== "undefined") { Android.runGame(currentPackage); }
                     setTimeout(() => {
                         closeGameLauncher(); handle.style.transform = 'translateX(0px)'; progress.style.width = '0px';

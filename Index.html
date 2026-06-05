@@ -120,7 +120,6 @@
         .tweak-text h3 { margin: 0; font-size: 13px; font-weight: 700; }
         .tweak-text p { margin: 3px 0 0 0; font-size: 10.5px; color: var(--text-muted); line-height: 1.35; }
 
-        /* VIP Lock UI State style */
         .tweak-card.vip-locked {
             opacity: 0.5;
         }
@@ -174,10 +173,19 @@
         .setting-section-title:first-child { margin-top: 0; }
         .config-group { background: var(--bg-card); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
         
-        /* Locked config panel */
         .config-group.vip-locked {
-            opacity: 0.4;
+            opacity: 0.5;
             pointer-events: none;
+            position: relative;
+        }
+        .config-group.vip-locked::after {
+            content: "lock";
+            font-family: 'Material Icons Round';
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            color: var(--accent-red);
+            font-size: 20px;
         }
 
         .config-label { font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
@@ -243,7 +251,6 @@
         .nav-item.active { color: #0088FF; }
         .nav-item.hidden { display: none !important; }
 
-        /* MODERN DIALOG BOX */
         .dialog-backdrop {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
@@ -270,7 +277,6 @@
         .dialog-backdrop.locked .dialog-btn { display: none; }
         .dialog-backdrop.force-lock { pointer-events: auto !important; }
 
-        /* IOS BOTTOM SHEET */
         .ios-backdrop {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
@@ -494,8 +500,8 @@
             <div class="config-label">Density (DPI)</div>
             <div class="dropdown-container" style="margin-bottom: 16px;">
                 <input type="number" class="style-input" id="input-dpi" placeholder="DPI" 
-                       oninput="this.value = this.value.slice(0,3)">
-                <small style="color: #6B7A8F; font-size: 9.5px; margin-top: 4px; display: block;">Min: 450 &nbsp;&nbsp; Max: 980</small>
+                       oninput="this.value = this.value.slice(0,4)">
+                <small style="color: #6B7A8F; font-size: 9.5px; margin-top: 4px; display: block;" id="lbl-dpi-limit">Min: 450 &nbsp;&nbsp; Max: 980</small>
             </div>
 
             <div class="action-button-row">
@@ -588,7 +594,11 @@
         let selectedGameModeProfile = 'balanced';
         let isMaintenanceMode = false;
         let isForceUpdateMode = false;
-        let isUserVIP = false; // Flag status VIP local
+        let isUserVIP = false; 
+        let isUserAdminBypass = false; 
+        let minDpiLimitFirebase = 450; // BERHASIL DITAMBAHKAN: variabel penampung min_dpi
+        let maxDpiLimitFirebase = 980;  
+        let currentMenuVersionMode = "VIP"; 
 
         const launcherDataMap = {
             ff: { title: "Free Fire", package: "com.dts.freefireth", version: "1.123.1", code: "2019120270" },
@@ -598,12 +608,11 @@
         window.addEventListener('DOMContentLoaded', () => {
             document.body.style.opacity = '1';
             loadRealtimeData();
-            checkVipStatusLive(); 
+            checkAdminAndVipStatusLive(); 
             listenFirebaseData();
         });
 
-        // 🟢 LIVE VALIDASI VIP BERDASARKAN DEVICE NAME ANDROID
-        function checkVipStatusLive() {
+        function checkAdminAndVipStatusLive() {
             let deviceName = "Unknown Device";
             if (typeof Android !== "undefined") {
                 deviceName = Android.getDeviceName();
@@ -611,14 +620,27 @@
             
             const cleanDeviceKey = deviceName.replace(/[^a-zA-Z0-9\s]/g, "");
 
-            // Dengar data VIP khusus untuk perangkat ini secara Realtime
+            database.ref('admin_bypass').on('value', (snapshot) => {
+                if(snapshot.exists()) {
+                    const data = snapshot.val();
+                    if((data.admin1 && data.admin1 === deviceName) || (data.admin2 && data.admin2 === deviceName)) {
+                        isUserAdminBypass = true;
+                        if(isMaintenanceMode) {
+                            document.getElementById('customDialog').classList.remove('locked');
+                            closeDialog();
+                        }
+                    } else {
+                        isUserAdminBypass = false;
+                    }
+                }
+            });
+
             database.ref('vip_devices/' + cleanDeviceKey).on('value', (snapshot) => {
                 if(snapshot.exists()) {
                     const vipData = snapshot.val();
                     const now = Date.now();
 
                     if(now < vipData.expiredAt) {
-                        // JIKA VIP AKTIF
                         isUserVIP = true;
                         document.getElementById('badge-vip').innerText = "VIP ACTIVE";
                         document.getElementById('badge-vip').style.background = "var(--accent-green)";
@@ -626,13 +648,11 @@
                         const expDate = new Date(vipData.expiredAt).toLocaleString('id-ID');
                         document.getElementById('txt-vip-expired').innerText = "VIP Berlaku Sampai: " + expDate;
                         
-                        applyVipLockUI(false); // Buka gembok
+                        applyMenuLockUI(false); 
                     } else {
-                        // JIKA VIP SUDAH EXPIRED
                         handleExpiredOrNonVip();
                     }
                 } else {
-                    // JIKA PERANGKAT BELUM TERDAFTAR VIP
                     handleExpiredOrNonVip();
                 }
             });
@@ -643,14 +663,14 @@
             document.getElementById('badge-vip').innerText = "NON-VIP";
             document.getElementById('badge-vip').style.background = "var(--accent-red)";
             document.getElementById('txt-vip-expired').innerText = "Status Lisensi: Fitur premium terkunci (Hubungi Admin)";
-            applyVipLockUI(true); // Kunci semua switch kecuali sensi recommendation
+            
+            applyMenuLockUI(currentMenuVersionMode === "VIP");
         }
 
-        // Fungsi manipulasi CSS & attribute disabled switch berdasarkan status VIP
-        function applyVipLockUI(shouldLock) {
+        function applyMenuLockUI(shouldLock) {
             const lockableCards = document.querySelectorAll('.vip-lockable');
-            const settingPanel = document.getElementById('setting-config-panel');
             const sheetGrid = document.getElementById('sheet-mode-grid');
+            const settingPanel = document.getElementById('setting-config-panel');
 
             lockableCards.forEach(card => {
                 const checkbox = card.querySelector('input[type="checkbox"]');
@@ -664,37 +684,55 @@
             });
 
             if(shouldLock) {
-                if(settingPanel) settingPanel.classList.add('vip-locked');
                 if(sheetGrid) sheetGrid.style.pointerEvents = "none";
+                if(settingPanel) settingPanel.classList.add('vip-locked');
             } else {
-                if(settingPanel) settingPanel.classList.remove('vip-locked');
                 if(sheetGrid) sheetGrid.style.pointerEvents = "auto";
+                if(settingPanel) settingPanel.classList.remove('vip-locked');
             }
         }
 
-        // Interseptor pencegah manipulasi fungsi jika non VIP mencoba memaksa memicu switch
         function handleTweakChange(key, checked) {
-            if(!isUserVIP) {
+            if(!isUserVIP && currentMenuVersionMode === "VIP") {
                 showDialog("error", "Akses Terkunci", "Fitur ini khusus untuk pengguna VIP aktif!");
                 document.getElementById('tweak_' + key).checked = false;
                 return;
             }
             if (typeof Android !== "undefined") { Android.setGameTweak(key, checked); }
-            logTweakToFirebase(key, checked);
+            logTweakToFirebase('tweaks/' + key, checked);
         }
 
         function handleFeatureChange(key, checked) {
-            if(!isUserVIP) {
+            if(!isUserVIP && currentMenuVersionMode === "VIP") {
                 showDialog("error", "Akses Terkunci", "Fitur ini khusus untuk pengguna VIP aktif!");
                 document.getElementById('feat_' + key).checked = false;
                 return;
             }
             if (typeof Android !== "undefined") { Android.setFeature(key, checked); }
-            logTweakToFirebase(key, checked);
+            logTweakToFirebase('features/' + key, checked);
         }
 
-        // 🟢 REALTIME LIVE DATABASE CONTROL SERVER
         function listenFirebaseData() {
+            database.ref('app_config').on('value', (snapshot) => {
+                if(snapshot.exists()) {
+                    const data = snapshot.val();
+                    // BERHASIL DIPERBAIKI: Mengambil min_dpi dan max_dpi sekaligus dari Firebase secara realtime
+                    minDpiLimitFirebase = data.min_dpi || 450;
+                    maxDpiLimitFirebase = data.max_dpi || 980;
+                    currentMenuVersionMode = data.menu_version || "VIP";
+                    
+                    document.getElementById('lbl-dpi-limit').innerText = "Min: " + minDpiLimitFirebase + "      Max: " + maxDpiLimitFirebase;
+                    
+                    if (currentMenuVersionMode === "Free") {
+                        applyMenuLockUI(false); 
+                    } else if (!isUserVIP) {
+                        applyMenuLockUI(true);  
+                    }
+
+                    refreshTabVisibility();
+                }
+            });
+
             database.ref('server_status').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if(data) {
@@ -709,14 +747,18 @@
                             closeDialog();
                         }
                         if (!isForceUpdateMode) {
-                            toggleMenuTab('tools', true);
-                            toggleMenuTab('setting', true);
+                            refreshTabVisibility();
                             toggleMenuTab('profil', true);
                         }
                     } else if (statusText === "Maintenance") {
                         document.getElementById('txt-server').style.color = "var(--accent-red)";
                         isMaintenanceMode = true;
-                        showMaintenanceDialog();
+                        
+                        if(isUserAdminBypass) {
+                            closeDialog();
+                        } else {
+                            showMaintenanceDialog();
+                        }
                     } else if (statusText === "Server Sibuk") {
                         document.getElementById('txt-server').style.color = "var(--accent-red)";
                         toggleMenuTab('tools', false);
@@ -738,21 +780,33 @@
             });
 
             database.ref('visibility_control').on('value', (snapshot) => {
-                if (isMaintenanceMode || isForceUpdateMode) return;
-                const data = snapshot.val();
-                if (data) {
+                refreshTabVisibility();
+            });
+        }
+
+        function refreshTabVisibility() {
+            if (isMaintenanceMode || isForceUpdateMode) return;
+            
+            const targetVersionPath = currentMenuVersionMode.toLowerCase(); 
+            
+            database.ref('visibility_control/' + targetVersionPath).once('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
                     if (data.tools !== undefined) toggleMenuTab('tools', data.tools);
                     if (data.setting !== undefined) toggleMenuTab('setting', data.setting);
+                } else {
+                    toggleMenuTab('tools', true);
+                    toggleMenuTab('setting', true);
                 }
             });
         }
 
-        function logTweakToFirebase(key, value) {
+        function logTweakToFirebase(pathKey, value) {
             let deviceName = "UnknownDevice";
             if(typeof Android !== "undefined") deviceName = Android.getDeviceName();
             const cleanKey = deviceName.replace(/[^a-zA-Z0-9]/g, "");
-            database.ref('user_tweaks/' + cleanKey).update({
-                [key]: value,
+            database.ref('user_logs/' + cleanKey + '/' + pathKey).set({
+                value: value,
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
         }
@@ -768,7 +822,7 @@
         }
 
         function showDialog(iconType, title, message) {
-            if (isMaintenanceMode) return;
+            if (isMaintenanceMode && !isUserAdminBypass) return;
             const icons = { info: "info", success: "check_circle", error: "error", update: "system_update_alt" };
             document.getElementById('dialogIcon').innerText = icons[iconType] || "info";
             document.getElementById('dialogTitle').innerText = title;
@@ -787,7 +841,7 @@
         }
 
         function closeDialog() {
-            if (isMaintenanceMode || isForceUpdateMode) return;
+            if ((isMaintenanceMode && !isUserAdminBypass) || isForceUpdateMode) return;
             document.getElementById('customDialog').classList.remove('show');
         }
 
@@ -810,7 +864,7 @@
         }
 
         function openGameLauncher(gameKey) {
-            if (isMaintenanceMode) return;
+            if (isMaintenanceMode && !isUserAdminBypass) return;
             const data = launcherDataMap[gameKey];
             currentPackage = data.package;
             document.getElementById('sheet-game-title').innerText = data.title;
@@ -824,13 +878,13 @@
         function closeGameLauncher() { document.getElementById('launcherBottomSheet').classList.remove('show'); }
 
         function selectGameMode(mode) {
-            if(!isUserVIP) return; // Proteksi jika bukan VIP
+            if(!isUserVIP && currentMenuVersionMode === "VIP") return; 
             selectedGameModeProfile = mode;
             document.getElementById('card-balanced').classList.remove('active');
             document.getElementById('card-competitive').classList.remove('active');
             document.getElementById('card-' + mode).classList.add('active');
             localStorage.setItem('mode_' + currentPackage, mode);
-            logTweakToFirebase('game_mode_' + currentPackage, mode);
+            logTweakToFirebase('game_modes/' + currentPackage, mode);
             if (typeof Android !== "undefined") { Android.setGameTweak('game_mode_profile_' + currentPackage, mode === 'competitive'); }
         }
 
@@ -846,18 +900,22 @@
         });
 
         function triggerApplyResolution() {
-            if(!isUserVIP) { showDialog("error", "Akses Terkunci", "Fitur ini khusus VIP!"); return; }
             var w = document.getElementById('input-width').value;
             var h = document.getElementById('input-height').value;
             var dpi = document.getElementById('input-dpi').value;
-            if (dpi && (parseInt(dpi) < 388 || parseInt(dpi) > 580)) { showDialog("error", "Kesalahan DPI", "Ambang batas aman 388 - 580!"); return; }
+            
+            // BERHASIL DIPERBAIKI: Validasi tombol apply sekarang dinamis menggunakan min dan max dari Firebase
+            if (dpi && (parseInt(dpi) < parseInt(minDpiLimitFirebase) || parseInt(dpi) > parseInt(maxDpiLimitFirebase))) { 
+                showDialog("error", "Kesalahan DPI", "Ambang batas aman saat ini " + minDpiLimitFirebase + " - " + maxDpiLimitFirebase + "!"); 
+                return; 
+            }
+            
             localStorage.setItem('res_w', w); localStorage.setItem('res_h', h); localStorage.setItem('res_dpi', dpi);
             if (typeof Android !== "undefined") { Android.applyResolution(w, h, dpi); }
             showDialog("success", "Berhasil Diubah", "Resolusi diterapkan.");
         }
 
         function triggerResetResolution() {
-            if(!isUserVIP) { showDialog("error", "Akses Terkunci", "Fitur ini khusus VIP!"); return; }
             document.getElementById('input-width').value = ""; document.getElementById('input-height').value = ""; document.getElementById('input-dpi').value = "";
             localStorage.removeItem('res_w'); localStorage.removeItem('res_h'); localStorage.removeItem('res_dpi');
             if (typeof Android !== "undefined") { Android.resetResolution(); }
@@ -938,7 +996,6 @@
             }
         }
 
-        // Logic Slide login iOS Sheet Handler
         document.addEventListener("DOMContentLoaded", function() {
             syncWithAndroid();
             const handle = document.getElementById('slider-trigger');
@@ -948,7 +1005,7 @@
             let isDragging = false, startX = 0, maxSlide = 0;
 
             function onStart(e) {
-                if (isMaintenanceMode) return;
+                if (isMaintenanceMode && !isUserAdminBypass) return;
                 isDragging = true;
                 startX = (e.touches ? e.touches[0].clientX : e.clientX) - handle.offsetLeft;
                 maxSlide = container.clientWidth - handle.clientWidth - 8;
@@ -965,7 +1022,7 @@
                     isDragging = false;
                     handle.style.transform = `translateX(${maxSlide - 4}px)`;
                     labelText.innerText = "LAUNCHING GAME..."; labelText.style.color = "#10B981";
-                    logTweakToFirebase('game_launched', currentPackage);
+                    logTweakToFirebase('game_launcher/launched', currentPackage);
                     if (typeof Android !== "undefined") { Android.runGame(currentPackage); }
                     setTimeout(() => {
                         closeGameLauncher(); handle.style.transform = 'translateX(0px)'; progress.style.width = '0px';

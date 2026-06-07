@@ -368,13 +368,13 @@
             <div class="tweak-left">
                 <div class="tweak-icon-box" style="color: var(--accent-green)"><span class="material-icons-round">sports_esports</span></div>
                 <div class="tweak-text">
-                    <h3>Gaming Mode</h3>
-                    <p>Meningkatkan sensitivitas layar secara maksimal dengan target,dan mempermudah hs,layar licin.</p>
+                    <h3>Gaming Mode 820</h3>
+                    <p>Meningkatkan sensitivitas layar secara maksimal dengan target DPI 820. Resolusi otomatis dikalibrasi agar aman tanpa layar terpotong!</p>
                 </div>
             </div>
             <div class="tweak-right-action">
                 <label class="switch">
-                    <input type="checkbox" id="tweak_gaming_mode" onchange="handleFreeTweakChange('gaming_mode', this.checked)">
+                    <input type="checkbox" id="tweak_gaming_mode_820" onchange="handleFreeTweakChange('gaming_mode_820', this.checked)">
                     <span class="slider"></span>
                 </label>
             </div>
@@ -948,8 +948,8 @@
 
         function syncWithAndroid() {
             if (typeof Android !== 'undefined') {
-                let gModeChk = document.getElementById('tweak_gaming_mode');
-                if (gModeChk) { gModeChk.checked = Android.getSavedTweakStatus('gaming_mode'); }
+                let gModeChk = document.getElementById('tweak_gaming_mode_820');
+                if (gModeChk) { gModeChk.checked = Android.getSavedTweakStatus('gaming_mode_820'); }
 
                 ["easy_drag", "drag_hs", "fps_boost", "sensitivity_tuning", "max_performance"].forEach(tweak => {
                     let chk = document.getElementById('tweak_' + tweak);

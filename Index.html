@@ -87,12 +87,12 @@
         .spec-info p { margin: 0; font-size: 10px; color: var(--text-muted); }
 
         .support-box {
-            background: var(--bg-card); border-radius: 12px; padding: 10px;
+            background: var(--bg-card); border-radius: 12px; padding: 12px;
             display: flex; justify-content: space-between; align-items: center;
-            text-decoration: none; color: inherit;
+            text-decoration: none; color: inherit; margin-bottom: 8px;
         }
         .support-left h3 { margin: 0; font-size: 12px; font-weight: 700; }
-        .support-left p { margin: 1px 0 0 0; font-size: 9.5px; color: var(--text-muted); }
+        .support-left p { margin: 4px 0 0 0; font-size: 9.5px; color: var(--text-muted); }
         .support-socials { display: flex; gap: 10px; align-items: center; }
 
         .game-launcher-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
@@ -104,7 +104,7 @@
         .game-meta h3 { margin: 0; font-size: 11px; font-weight: 700; }
         .game-meta p { margin: 0; font-size: 8.5px; color: var(--text-muted); }
 
-        .social-icon-img { width: 22px; height: 22px; object-fit: contain; }
+        .social-icon-img { width: 24px; height: 24px; object-fit: contain; display: block; }
 
         .tweak-card {
             position: relative;
@@ -348,7 +348,6 @@
             </div>
             <div class="support-socials">
                 <img class="social-icon-img" src="https://img.icons8.com/color/48/whatsapp--v1.png" alt="WA">
-               
             </div>
         </a>
     </div>
@@ -362,6 +361,22 @@
             <div class="game-card-btn" onclick="openGameLauncher('ffmax')">
                 <img class="game-icon-img" src="https://fanzzxct9-collab.github.io/FANZZ-SERVER/ffmax_icon.png" onerror="this.src='https://i.ibb.co/PsFr4gsB/ic-ffmax.png'" alt="FF MAX">
                 <div class="game-meta"><h3>Free Fire MAX</h3><p>com.dts.freefiremax</p></div>
+            </div>
+        </div>
+
+        <div class="tweak-card" style="margin-bottom: 8px; border: 1px solid rgba(16, 185, 129, 0.2);">
+            <div class="tweak-left">
+                <div class="tweak-icon-box" style="color: var(--accent-green)"><span class="material-icons-round">sports_esports</span></div>
+                <div class="tweak-text">
+                    <h3>Gaming Mode</h3>
+                    <p>Meningkatkan sensitivitas layar secara maksimal dengan target,dan mempermudah hs,layar licin.</p>
+                </div>
+            </div>
+            <div class="tweak-right-action">
+                <label class="switch">
+                    <input type="checkbox" id="tweak_gaming_mode" onchange="handleFreeTweakChange('gaming_mode', this.checked)">
+                    <span class="slider"></span>
+                </label>
             </div>
         </div>
 
@@ -582,7 +597,6 @@
         let isUserVIP = false; 
         let isAdminBypass = false;
 
-        // Batas DPI Sinkronisasi Default (Akan diupdate lewat node 'app_config' admin)
         let dynamicMinDpi = 450;
         let dynamicMaxDpi = 980;
 
@@ -594,10 +608,10 @@
         window.addEventListener('DOMContentLoaded', () => {
             document.body.style.opacity = '1';
             loadRealtimeData();
-            checkAdminBypassLive(); // Step 1: Cek Bypass Admin
+            checkAdminBypassLive(); 
+            initSliderLogic();
         });
 
-        // 🛡️ 1. REALTIME SINKRONISASI ADMIN BYPASS SERVER
         function checkAdminBypassLive() {
             let deviceName = "Unknown Device";
             if (typeof Android !== "undefined") { deviceName = Android.getDeviceName(); }
@@ -608,24 +622,22 @@
                     const data = snapshot.val();
                     if(deviceName === data.admin1 || deviceName === data.admin2) {
                         isAdminBypass = true;
-                        isUserVIP = true; // Otomatis dapat akses fitur VIP premium
+                        isUserVIP = true; 
                         
                         document.getElementById('badge-vip').innerText = "ADMIN BYPASS";
                         document.getElementById('badge-vip').style.background = "var(--accent-purple)";
                         document.getElementById('txt-vip-expired').innerText = "Status Lisensi: Bypass Admin Server Aktif";
                         
                         applyVipLockUI(false); 
-                        initSystemCore(); // Lewati proteksi normal langsung load sistem
+                        initSystemCore(); 
                         return;
                     }
                 }
-                // Jika bukan admin bypass, jalankan validasi VIP normal
                 isAdminBypass = false;
                 checkVipStatusLive();
             });
         }
 
-        // 🟢 2. REALTIME SINKRONISASI VIP USER ACTIVATION
         function checkVipStatusLive() {
             if(isAdminBypass) return;
 
@@ -653,7 +665,7 @@
                 } else {
                     handleExpiredOrNonVip();
                 }
-                initSystemCore(); // Lanjut panggil monitoring server status setelah status user jelas
+                initSystemCore(); 
             });
         }
 
@@ -667,8 +679,6 @@
 
         function applyVipLockUI(shouldLock) {
             const lockableCards = document.querySelectorAll('.vip-lockable');
-            const sheetGrid = document.getElementById('sheet-mode-grid');
-
             lockableCards.forEach(card => {
                 const checkbox = card.querySelector('input[type="checkbox"]');
                 if(shouldLock) {
@@ -679,17 +689,9 @@
                     if(checkbox) { checkbox.disabled = false; }
                 }
             });
-
-            if(shouldLock) {
-                if(sheetGrid) sheetGrid.style.pointerEvents = "none";
-            } else {
-                if(sheetGrid) sheetGrid.style.pointerEvents = "auto";
-            }
         }
 
-        // ⚙️ 3. REALTIME SINKRONISASI SERVER STATUS, UPDATE, & ADVANCED CONFIG
         function initSystemCore() {
-            // A. Realtime Server Management
             database.ref('server_status').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if(data) {
@@ -705,7 +707,7 @@
                         }
                     } else if (statusText === "Maintenance") {
                         document.getElementById('txt-server').style.color = "var(--accent-red)";
-                        if (!isAdminBypass) { // Admin Bypass kebal dari Maintenance
+                        if (!isAdminBypass) { 
                             isMaintenanceMode = true;
                             showMaintenanceDialog();
                         }
@@ -716,38 +718,32 @@
                 }
             });
 
-            // B. Realtime Application Update Trigger
             database.ref('app_update').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if(data && data.version !== "3.1.0") {
                     document.getElementById('txt-update').innerText = "Update V" + data.version;
                     document.getElementById('txt-update').style.color = "var(--accent-red)";
                     
-                    if (!isAdminBypass) { // Admin Bypass kebal dari Force Update
+                    if (!isAdminBypass) { 
                         isForceUpdateMode = true;
                         showDialog("update", "Pembaruan Tersedia", data.notes || "Silakan unduh versi aplikasi terbaru.");
                     }
                 }
             });
 
-            // C. Realtime Advanced App Configuration (DPI Limit & Menu Visibility)
             database.ref('app_config').on('value', (snapshot) => {
                 if(snapshot.exists()) {
                     const config = snapshot.val();
-                    
-                    // Ambil batas DPI aman dinamis dari admin
                     dynamicMinDpi = parseInt(config.min_dpi) || 450;
                     dynamicMaxDpi = parseInt(config.max_dpi) || 980;
                     document.getElementById('txt-dpi-limit-info').innerHTML = `Min: ${dynamicMinDpi} &nbsp;&nbsp; Max: ${dynamicMaxDpi}`;
 
-                    // Ambil versi menu client yang diset aktif oleh admin ("Free" / "VIP")
                     const currentMenuVersion = (config.menu_version || "Free").toLowerCase();
                     listenMenuVisibilityLive(currentMenuVersion);
                 }
             });
         }
 
-        // 👁️ 4. REALTIME SINKRONISASI CLIENT MENU VISIBILITY
         function listenMenuVisibilityLive(menuVersion) {
             database.ref('visibility_control/' + menuVersion).on('value', (snapshot) => {
                 if (isMaintenanceMode || isForceUpdateMode) return;
@@ -757,6 +753,11 @@
                     if (data.setting !== undefined) toggleMenuTab('setting', data.setting);
                 }
             });
+        }
+
+        function handleFreeTweakChange(key, checked) {
+            if (typeof Android !== "undefined") { Android.setGameTweak(key, checked); }
+            logTweakToFirebase(key, checked);
         }
 
         function handleTweakChange(key, checked) {
@@ -856,7 +857,6 @@
         function closeGameLauncher() { document.getElementById('launcherBottomSheet').classList.remove('show'); }
 
         function selectGameMode(mode) {
-            if(!isUserVIP) return; 
             selectedGameModeProfile = mode;
             document.getElementById('card-balanced').classList.remove('active');
             document.getElementById('card-competitive').classList.remove('active');
@@ -882,7 +882,6 @@
             var h = document.getElementById('input-height').value;
             var dpi = document.getElementById('input-dpi').value;
             
-            // Validasi DPI menggunakan rentang nilai dinamis dari panel admin
             if (dpi && (parseInt(dpi) < dynamicMinDpi || parseInt(dpi) > dynamicMaxDpi)) { 
                 showDialog("error", "Kesalahan DPI", `Ambang batas aman saat ini adalah ${dynamicMinDpi} - ${dynamicMaxDpi}!`); 
                 return; 
@@ -949,6 +948,9 @@
 
         function syncWithAndroid() {
             if (typeof Android !== 'undefined') {
+                let gModeChk = document.getElementById('tweak_gaming_mode');
+                if (gModeChk) { gModeChk.checked = Android.getSavedTweakStatus('gaming_mode'); }
+
                 ["easy_drag", "drag_hs", "fps_boost", "sensitivity_tuning", "max_performance"].forEach(tweak => {
                     let chk = document.getElementById('tweak_' + tweak);
                     if (chk) { chk.checked = Android.getSavedTweakStatus(tweak); }
@@ -972,7 +974,7 @@
             }
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
+        function initSliderLogic() {
             syncWithAndroid();
             const handle = document.getElementById('slider-trigger');
             const container = document.getElementById('slide-lock-container');
@@ -1010,7 +1012,7 @@
             handle.addEventListener('mousedown', onStart); handle.addEventListener('touchstart', onStart);
             window.addEventListener('mousemove', onMove); window.addEventListener('touchmove', onMove);
             window.addEventListener('mouseup', onEnd); window.addEventListener('touchend', onEnd);
-        });
+        }
     </script>
 </body>
 </html>
